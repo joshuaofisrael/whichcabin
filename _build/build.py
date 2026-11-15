@@ -67,7 +67,7 @@ def page(path, title, desc, body, jsonld=None, crumbs=None, noindex=False, legal
 </head><body><a class="skip" href="#main">Skip to content</a>
 <header class="site"><div class="wrap"><a class="brand" href="{u('/')}">{LOGO}<span>{BRAND}</span></a><nav class="main" aria-label="Main">{nav}</nav></div></header>
 <main id="main" class="wrap">{bc}{body}<!-- ad-slot: below-content (reserved; no ad code) --></main>
-<footer class="site"><div class="wrap"><p class="fbrand"><strong>{BRAND}</strong>: which cabin and deck to ask for on the biggest cruise ships, worked out from each line's own deck plans. Independent and not affiliated with any cruise line. Layouts change, so always check the line's current deck plan before you book.</p>
+<footer class="site"><div class="wrap"><p class="fbrand"><strong>{BRAND}</strong>: which cabin and deck to ask for on the biggest cruise ships, worked out from published deck-by-deck listings. Independent and not affiliated with any cruise line. Layouts change, so always check the line's current deck plan before you book.</p>
 <p class="flinks"><a href="{u('/about/')}">About</a> | <a href="{u('/methodology/')}">Sources and methods</a> | <a href="{u('/image-policy/')}">Image policy</a> | <a href="{u('/terms/')}">Terms of use</a> | <a href="{u('/privacy/')}">Privacy</a> | <a href="{u('/disclaimer/')}">Disclaimer</a> | <a href="{u('/ad-disclosure/')}">Advertising disclosure</a> | <a href="{u('/copyright/')}">Copyright and DMCA</a> | <a href="{u('/contact/')}">Contact</a></p>
 {f'<p class="legal-line">{LEGAL_LINE}</p>' if legal else ''}</div></footer>
 <script src="{u('/assets/site.js')}?v=1" defer></script>{beacon}
@@ -303,7 +303,7 @@ def guides():
 def home():
     lines = "".join(f'<li class="card"><h3><a href="{u("/lines/" + k + "/")}">{E(L["name"])}</a></h3><p>' + ", ".join(f'<a href="{u(ship_path(s))}">{E(s["name"])}</a>' for s in SHIPS if s["line"] == k) + '</p></li>' for k, L in LINES.items())
     body = f'''<section class="hero"><h1>Which cabin should you book on your cruise ship?</h1>
-<p class="answer">Deck-by-deck guides to the best cabins and the ones to avoid on {len(SHIPS)} of the biggest cruise ships. We map what is above and below every cabin deck from each line's own deck plans, so you can ask for a quiet cabin before you book.</p>
+<p class="answer">Deck-by-deck guides to the best cabins and the ones to avoid on {len(SHIPS)} of the biggest cruise ships. We map what is above and below every cabin deck from published deck-by-deck listings, with a link to each line's own deck plan, so you can ask for a quiet cabin before you book.</p>
 <p class="btnrow"><a class="btn" href="{u('/ships/')}">Find your ship</a> <a class="btn alt" href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a></p></section>
 <h2>Ships by cruise line</h2><ul class="cards">{lines}</ul>
 <h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li></ul>
