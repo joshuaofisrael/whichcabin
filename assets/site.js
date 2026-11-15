@@ -1,0 +1,1 @@
+(function(){var s=document.getElementById('contact-status');if(s&&/[?&]sent=1/.test(location.search)){s.hidden=false;s.className='form-status ok';s.textContent='Thanks, your message was sent. We will reply by email.';}})();

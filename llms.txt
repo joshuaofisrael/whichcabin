@@ -1,0 +1,39 @@
+# Which Cabin
+
+> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on 25 of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked 15 Nov 2026.
+
+Independent; not affiliated with any cruise line. Layouts change; confirm on the line's deck plan.
+
+## Guides
+- [How to choose a cruise cabin](https://whichcabin.com/guides/how-to-choose-a-cruise-cabin/)
+- [Quietest cabin decks on every ship](https://whichcabin.com/guides/quietest-cruise-cabins/)
+- [Best cabin for seasickness](https://whichcabin.com/guides/best-cabin-for-seasickness/)
+- [Cruise cabins to avoid](https://whichcabin.com/guides/cruise-cabins-to-avoid/)
+- [Sources and methods](https://whichcabin.com/methodology/)
+
+## Ships
+- [Icon of the Seas](https://whichcabin.com/ships/icon-of-the-seas/) (Royal Caribbean): quiet cabin decks 10; cabin deck under pools 14, 16 to 18
+- [Star of the Seas](https://whichcabin.com/ships/star-of-the-seas/) (Royal Caribbean): quiet cabin decks 10; cabin deck under pools 14, 16 to 18
+- [Utopia of the Seas](https://whichcabin.com/ships/utopia-of-the-seas/) (Royal Caribbean): quiet cabin decks 10 to 11; cabin deck under pools 14, 17
+- [Wonder of the Seas](https://whichcabin.com/ships/wonder-of-the-seas/) (Royal Caribbean): quiet cabin decks none; cabin deck under pools 14, 17
+- [Symphony of the Seas](https://whichcabin.com/ships/symphony-of-the-seas/) (Royal Caribbean): quiet cabin decks 10 to 11; cabin deck under pools 14, 17
+- [Oasis of the Seas](https://whichcabin.com/ships/oasis-of-the-seas/) (Royal Caribbean): quiet cabin decks 10 to 11; cabin deck under pools 14, 17
+- [Carnival Celebration](https://whichcabin.com/ships/carnival-celebration/) (Carnival): quiet cabin decks 10 to 12, 14; cabin deck under pools 15 to 17
+- [Mardi Gras](https://whichcabin.com/ships/mardi-gras/) (Carnival): quiet cabin decks 10 to 12, 14; cabin deck under pools 15 to 17
+- [Carnival Jubilee](https://whichcabin.com/ships/carnival-jubilee/) (Carnival): quiet cabin decks 10 to 12, 14; cabin deck under pools 15 to 17
+- [Norwegian Prima](https://whichcabin.com/ships/norwegian-prima/) (Norwegian): quiet cabin decks 10 to 13; cabin deck under pools 15 to 18
+- [Norwegian Viva](https://whichcabin.com/ships/norwegian-viva/) (Norwegian): quiet cabin decks 10 to 13; cabin deck under pools 15 to 18
+- [Norwegian Encore](https://whichcabin.com/ships/norwegian-encore/) (Norwegian): quiet cabin decks 10 to 13; cabin deck under pools 15, 17 to 19
+- [Norwegian Getaway](https://whichcabin.com/ships/norwegian-getaway/) (Norwegian): quiet cabin decks 10; cabin deck under pools 14 to 17
+- [MSC World America](https://whichcabin.com/ships/msc-world-america/) (MSC): quiet cabin decks 10 to 12, 14 to 15; cabin deck under pools 16, 19, 21
+- [MSC Seascape](https://whichcabin.com/ships/msc-seascape/) (MSC): quiet cabin decks 10 to 14; cabin deck under pools 15 to 16, 18 to 19
+- [MSC Seashore](https://whichcabin.com/ships/msc-seashore/) (MSC): quiet cabin decks 10 to 14; cabin deck under pools 15 to 16, 18 to 19
+- [Celebrity Beyond](https://whichcabin.com/ships/celebrity-beyond/) (Celebrity): quiet cabin decks 8 to 11; cabin deck under pools 12
+- [Celebrity Ascent](https://whichcabin.com/ships/celebrity-ascent/) (Celebrity): quiet cabin decks 8 to 11; cabin deck under pools 12
+- [Celebrity Edge](https://whichcabin.com/ships/celebrity-edge/) (Celebrity): quiet cabin decks 8 to 11; cabin deck under pools 12, 15
+- [Sun Princess](https://whichcabin.com/ships/sun-princess/) (Princess): quiet cabin decks 11 to 12, 14; cabin deck under pools 16 to 17
+- [Star Princess](https://whichcabin.com/ships/star-princess/) (Princess): quiet cabin decks 11 to 12, 14; cabin deck under pools 16 to 17
+- [Discovery Princess](https://whichcabin.com/ships/discovery-princess/) (Princess): quiet cabin decks 9 to 12, 14; cabin deck under pools 15 to 17
+- [Disney Wish](https://whichcabin.com/ships/disney-wish/) (Disney): quiet cabin decks 7 to 9; cabin deck under pools 10 to 12, 14
+- [Disney Treasure](https://whichcabin.com/ships/disney-treasure/) (Disney): quiet cabin decks 7 to 9; cabin deck under pools 10 to 12, 14
+- [Disney Destiny](https://whichcabin.com/ships/disney-destiny/) (Disney): quiet cabin decks 7 to 9; cabin deck under pools 10 to 12, 14
