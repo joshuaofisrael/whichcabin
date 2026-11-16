@@ -14,6 +14,15 @@ SITE_URL = BASE_URL if LAUNCH else "https://joshuaofisrael.github.io/whichcabin/
 PREFIX = "" if LAUNCH else "/whichcabin"
 BRAND = "Which Cabin"
 TODAY = "2026-11-15"; TODAY_H = "15 Nov 2026"
+ADDED = "2026-11-16"  # ships added after the 15 Nov 2026 set
+MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+def humandate(iso):
+    y, m, d = iso.split("-")
+    return f"{int(d)} {MONTHS[int(m)]} {y}"
+def join_names(names):
+    names = list(names)
+    if len(names) < 2: return "".join(names)
+    return ", ".join(names[:-1]) + " and " + names[-1]
 INDEXNOW_KEY = "6d99be0a8662d09dadd3f19d2857201e"
 CF_BEACON_TOKEN = "eac63f2b5dbc4539a2d95249baab6472"  # shared JI Ventures Analytics 2 token (requestHost match), same as Coaster Map. Launch build only.
 FORM_ENDPOINT = "https://formsubmit.co/4497ee41a1200e746e967998473d21da"
@@ -76,17 +85,20 @@ def page(path, title, desc, body, jsonld=None, crumbs=None, noindex=False, legal
 def link(s): return f'<a href="{s[1]}" rel="nofollow noopener" target="_blank">{E(s[0])}</a>'
 
 # ---------- deck analysis (from CruiseMapper deck labels, which summarise each line's official deck plan) ----------
-CABIN_RX = re.compile(r"^(Cabins|Suites?|Studios\d*|The Haven\d*|Haven\d*|Tower Suite\d*|Loft Suites?\d*|Suite Class\d*|Edge Villas|Iconic Suites|Duplex Suites\d*)$")
+CABIN_RX = re.compile(r"^(Cabins|Suites?|Studios(\d*| Lower| Upper)?|The Haven(\d*| Lower| Upper)?|Haven\d*|Tower Suite\d*|Loft Suites?\d*|Suite Class\d*|Edge Villas|Iconic Suites|Duplex Suites\d*|Yacht Club Cabins)$")
 NEUTRAL_RX = re.compile(r"^(Bridge|Hospital|Crew|Crew Cabins|Tendering|Topdeck|Aerial View)$")
-ABOVE_RX = re.compile(r"Pool|Lido|Sundeck|Sports|Water|Slide|FlowRider|Golf|Speedway|Racetrack|Ropes|Rollglider|Coaster|Park19|Adventure Trail|Cliffhanger|Spiral|Abyss|Thrill Island|Chill Island|AquaDome|Dome|Sanctuary|SkyDeck|Serenity|Marketplace|Buffet|Gym|Fitness|Helideck|Rooftop|Retreat|Sea View Terrace|Luminae|Sky|Kids|Teens|Splashaway|Magic Carpet", re.I)
-NIGHT_RX = re.compile(r"Theater|Music Hall|Casino|Entertainment|Lounge|Promenade|Boardwalk|Central Park|Havana|Studio B|Ice|Absolute Zero|Shops|Plaza|Fiesta|Gala|Cinemas|Lobby|Gateway|Currents|French Quarter|La Piazza|The Shores|Eden|Surfside|Observation|Top Sail|Adults|Wonderland|Family Harbor|Dining|Restaurant|Spa", re.I)
+# "Sky" alone is a deck name on some ships (Celebrity's Sky deck). Activity names are listed in full.
+ABOVE_RX = re.compile(r"Pool|Lido|Sundeck|Sports|Water|Slide|FlowRider|Golf|Speedway|Racetrack|Ropes|Rollglider|Coaster|Park19|Adventure Trail|Cliffhanger|Spiral|Abyss|Thrill Island|Chill Island|AquaDome|Dome|Sanctuary|SkyDeck|SkyRide|SkyCourse|SkyZone|Skydeck|Serenity|Marketplace|Buffet|Gym|Fitness|Helideck|Rooftop|Retreat|Sea View Terrace|Luminae|Solarium|SeaPlex|NorthStar|RipCord|Vibe Beach Club|Kids|Teens|Splashaway|Magic Carpet", re.I)
+NIGHT_RX = re.compile(r"Theater|Music Hall|Casino|Entertainment|Lounge|Promenade|Boardwalk|Central Park|Havana|Studio B|Ice|Absolute Zero|Shops|Plaza|Fiesta|Gala|Cinemas|Lobby|Gateway|Currents|French Quarter|La Piazza|The Shores|Eden|Surfside|Observation|Top Sail|Adults|Wonderland|Family Harbor|Dining|Restaurant|Spa|Enchanted Garden|Sheehan|Crows Nest|Izumi", re.I)
 def tokens(label):
     t = [x.strip() for x in label.split("-") if x.strip()]
     return [re.sub(r"\d+$", "", x).strip() if re.search(r"[A-Za-z]\d$", x) else x for x in t]
+# Deck names that contain a venue word but are not themselves a venue.
+DECK_NAME = {"Upper Promenade", "Lower Promenade"}
 def classify(label):
     t = tokens(label)
     cab = [x for x in t if CABIN_RX.match(x)]
-    ven = [x for x in t if not CABIN_RX.match(x) and not NEUTRAL_RX.match(x) and (ABOVE_RX.search(x) or NIGHT_RX.search(x))]
+    ven = [x for x in t if x not in DECK_NAME and not CABIN_RX.match(x) and not NEUTRAL_RX.match(x) and (ABOVE_RX.search(x) or NIGHT_RX.search(x))]
     return cab, ven, t
 def nice(label): return " · ".join(dict.fromkeys(tokens(label)))
 def analyse(s):
@@ -139,8 +151,9 @@ def deck_chart(A, s):
 
 def ship_page(s):
     A = analyse(s); L = LINES[s["line"]]; path = ship_path(s)
+    chk = s.get("checked", TODAY); chk_h = humandate(chk)
     cab = [r for r in A if r["cabin"]]; quiet = [r for r in cab if r["status"] == "quiet"]
-    POOLY = re.compile(r"Pool|Lido|Sundeck|Sports|Water|Slide|Speedway|Racetrack|Coaster|Dome|Marketplace|Buffet|FlowRider|Golf|Thrill|Chill|Serenity|Sanctuary|Ropes|Rollglider|Park19|Adventure|Cliffhanger|Spiral|Abyss", re.I)
+    POOLY = re.compile(r"Pool|Lido|Sundeck|Sports|Water|Slide|Speedway|Racetrack|Coaster|Dome|Marketplace|Buffet|FlowRider|Golf|Thrill|Chill|Serenity|Sanctuary|Ropes|Rollglider|Park19|Adventure|Cliffhanger|Spiral|Abyss|Solarium|SeaPlex|NorthStar|RipCord|SkyRide|SkyCourse|SkyZone|Vibe Beach Club", re.I)
     under_pool = [r for r in cab if any(POOLY.search(x) for x in r["above"])]
     over_night = [r for r in cab if any(re.search(r"Theater|Music Hall|Casino|Entertainment|Lounge|Promenade|Boardwalk|Havana|Ice|Absolute Zero|Shops|Plaza|Fiesta|Cinemas|Dining|Restaurant|Eden|Gateway|Currents|Lobby", x, re.I) for x in r["below"])]
     shared = [r for r in cab if r["venues"]]
@@ -186,8 +199,9 @@ def ship_page(s):
     srcs = [(f'{L["name"]}: official {s["name"]} deck plans', s["official"]), (f'CruiseMapper: {s["name"]} deck plans (deck-by-deck listing)', DECKS[s["cm"]]["index"]), fsrc]
     if fsrc is not wiki: srcs.append(wiki)
     srcs.append(CDC)
+    sub_bits = [L["name"]] + ([facts["cls"]] if facts.get("cls") else []) + [f"deck plans checked {chk_h}"]
     body = f'''<article class="prose wide"><h1>Which cabin to book on {E(s["name"])}</h1>
-<p class="sub">{E(L["name"])} · {E(facts.get("cls", ""))} · deck plans checked {TODAY_H}</p>
+<p class="sub">{E(" · ".join(sub_bits))}</p>
 <div class="answer"><p><strong>Quick answer</strong></p><ul>{"".join(qa)}</ul></div>
 <p>{E(s["name"])} has {len(cab)} decks with passenger cabins. Below is our deck noise map, which marks every deck by what is on it and what is directly above and below, followed by ship-specific tips and the cabins to think twice about. It is a planning shortcut: the line's own deck plan is always the final word on any cabin number.</p>
 {deck_chart(A, s)}
@@ -205,41 +219,47 @@ def ship_page(s):
 {('<h2>Sister ships</h2><ul class="cols">' + sis + '</ul>') if sis else ''}
 <section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">Frequently asked questions</h2>{"".join(f"<details><summary>{E(q)}</summary><p>{E(a)}</p></details>" for q, a in faqs)}</section>
 <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2><ul>{"".join(f"<li>{link(x)}</li>" for x in srcs)}</ul>
-<p class="note">Retrieved {TODAY_H}. Which Cabin is not affiliated with {E(L["name"])}. Deck layouts and cabin categories can change after refits; always confirm on the line's current deck plan before booking. See <a href="{u('/methodology/')}">how we build these pages</a>.</p></section>
+<p class="note">Retrieved {chk_h}. Which Cabin is not affiliated with {E(L["name"])}. Deck layouts and cabin categories can change after refits; always confirm on the line's current deck plan before booking. See <a href="{u('/methodology/')}">how we build these pages</a>.</p></section>
 <p><a href="{u('/lines/' + s["line"] + '/')}">All {E(L["short"])} ships</a> · <a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a> · <a href="{u('/guides/quietest-cruise-cabins/')}">Quietest decks on every ship</a></p></article>'''
-    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": f'Which cabin to book on {s["name"]}', "dateModified": TODAY, "datePublished": TODAY,
+    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": f'Which cabin to book on {s["name"]}', "dateModified": chk, "datePublished": chk,
            "author": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "publisher": {"@type": "Organization", "name": BRAND, "url": BASE_URL, "logo": {"@type": "ImageObject", "url": url("/logo.png")}},
            "mainEntityOfPage": url(path), "about": {"@type": "Thing", "name": s["name"]}},
           {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}]
-    write(path, page(path, title, desc, body, ld, [("/", "Home"), ("/ships/", "Ships"), ("/lines/" + s["line"] + "/", L["short"]), (path, s["name"])]))
+    write(path, page(path, title, desc, body, ld, [("/", "Home"), ("/ships/", "Ships"), ("/lines/" + s["line"] + "/", L["short"]), (path, s["name"])], modified=chk))
     s["_quiet"] = qn; s["_cab"] = [r["num"] for r in cab]; s["_pool"] = [r["num"] for r in under_pool]
 
 def ships_index():
     rows = "".join(f'<tr><td><a href="{u(ship_path(s))}">{E(s["name"])}</a></td><td>{E(LINES[s["line"]]["short"])}</td><td>{E(s["facts"].get("cls", ""))}</td><td>{E(rng(s["_quiet"])) or "None"}</td></tr>' for s in SHIPS)
-    body = f'''<h1>Cruise ship cabin guides</h1><p class="answer">Pick your ship for a deck-by-deck noise map, the best cabins to ask for and the ones to avoid. We cover {len(SHIPS)} of the biggest ships at Royal Caribbean, Carnival, Norwegian, MSC, Celebrity, Princess and Disney.</p>
+    body = f'''<h1>Cruise ship cabin guides</h1><p class="answer">Pick your ship for a deck-by-deck noise map, the best cabins to ask for and the ones to avoid. We cover {len(SHIPS)} of the biggest ships at {E(join_names(L["short"] for L in LINES.values()))}.</p>
 <div class="tablewrap"><table class="list"><thead><tr><th scope="col">Ship</th><th scope="col">Line</th><th scope="col">Class</th><th scope="col">Quiet cabin decks</th></tr></thead><tbody>{rows}</tbody></table></div>'''
-    write("/ships/", page("/ships/", f"Cruise Ship Cabin Guides: {len(SHIPS)} Ships | {BRAND}", f"Which cabin to book on {len(SHIPS)} of the biggest cruise ships: quiet decks, seasickness picks and cabins to avoid, ship by ship.", body, None, [("/", "Home"), ("/ships/", "Ships")]))
+    write("/ships/", page("/ships/", f"Cruise Ship Cabin Guides: {len(SHIPS)} Ships | {BRAND}", f"Which cabin to book on {len(SHIPS)} of the biggest cruise ships: quiet decks, seasickness picks and cabins to avoid, ship by ship.", body, None, [("/", "Home"), ("/ships/", "Ships")], modified=ADDED))
 
 def line_pages():
     cards = []
     for k, L in LINES.items():
         ss = [s for s in SHIPS if s["line"] == k]
         classes = list(dict.fromkeys(s["facts"].get("cls") for s in ss if s["facts"].get("cls")))
-        items = "".join(f'<li class="card"><h2><a href="{u(ship_path(s))}">{E(s["name"])}</a></h2><p>{E(s["facts"].get("cls", ""))}. Quiet cabin decks: {E(rng(s["_quiet"])) or "none fully enclosed"}.' + (f' Under the pool deck: {E(rng(s["_pool"]))}.' if s["_pool"] else "") + '</p></li>' for s in ss)
-        body = f'''<h1>{E(L["name"])}: which cabin to book</h1><p class="answer">Cabin guides for {len(ss)} {E(L["short"])} ships ({E(", ".join(classes))}). Ships of the same class share a layout, so the same decks tend to be quiet or noisy across sister ships.</p>
+        def card(s):
+            cls = s["facts"].get("cls", "")
+            head = f"{E(cls)}. " if cls else ""
+            pool = f' Under the pool deck: {E(rng(s["_pool"]))}.' if s["_pool"] else ""
+            return f'<li class="card"><h2><a href="{u(ship_path(s))}">{E(s["name"])}</a></h2><p>{head}Quiet cabin decks: {E(rng(s["_quiet"])) or "none fully enclosed"}.{pool}</p></li>'
+        items = "".join(card(s) for s in ss)
+        klass = f" ({', '.join(classes)})" if classes else ""
+        body = f'''<h1>{E(L["name"])}: which cabin to book</h1><p class="answer">Cabin guides for {len(ss)} {E(L["short"])} ships{E(klass)}. Ships of the same class share a layout, so the same decks tend to be quiet or noisy across sister ships.</p>
 <ul class="cards">{items}</ul><p class="note">Official fleet pages: {link((L["name"] + " ships", L["url"]))}. Which Cabin is independent and not affiliated with {E(L["name"])}.</p>
 <p><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></p>'''
         p = f"/lines/{k}/"
-        write(p, page(p, f'{L["short"]} Cabin Guide: Best Decks by Ship | {BRAND}', f'Which cabin and deck to book on {", ".join(s["name"] for s in ss)}: quiet decks, seasickness picks and cabins to avoid.', body, None, [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])]))
+        write(p, page(p, f'{L["short"]} Cabin Guide: Best Decks by Ship | {BRAND}', f'Which cabin and deck to book on {", ".join(s["name"] for s in ss)}: quiet decks, seasickness picks and cabins to avoid.', body, None, [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])], modified=ADDED))
         cards.append(f'<li class="card"><h2><a href="{u(p)}">{E(L["name"])}</a></h2><p>{", ".join(E(s["name"]) for s in ss)}</p></li>')
     body = f'<h1>Cabin guides by cruise line</h1><p class="answer">Choose a cruise line to see every ship we cover, with its quiet decks and the decks under the pool.</p><ul class="cards">{"".join(cards)}</ul>'
-    write("/lines/", page("/lines/", f"Cruise Lines: Cabin Guides by Line | {BRAND}", "Cabin and deck guides for Royal Caribbean, Carnival, Norwegian, MSC, Celebrity, Princess and Disney ships.", body, None, [("/", "Home"), ("/lines/", "Cruise lines")]))
+    write("/lines/", page("/lines/", f"Cruise Lines: Cabin Guides by Line | {BRAND}", f"Cabin and deck guides for {join_names(L['short'] for L in LINES.values())} ships.", body, None, [("/", "Home"), ("/lines/", "Cruise lines")], modified=ADDED))
 
-def guide(path, title, h1, desc, inner, faqs, srcs):
-    body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}<section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">Frequently asked questions</h2>' + "".join(f"<details><summary>{E(q)}</summary><p>{E(a)}</p></details>" for q, a in faqs) + '</section><section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {TODAY_H}.</p></section></article>'
-    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": h1, "dateModified": TODAY, "datePublished": TODAY, "author": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "publisher": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "mainEntityOfPage": url(path)},
+def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED):
+    body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}<section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">Frequently asked questions</h2>' + "".join(f"<details><summary>{E(q)}</summary><p>{E(a)}</p></details>" for q, a in faqs) + '</section><section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section></article>'
+    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": h1, "dateModified": modified, "datePublished": modified, "author": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "publisher": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "mainEntityOfPage": url(path)},
           {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}]
-    write(path, page(path, title, desc, body, ld, [("/", "Home"), (path, h1)]))
+    write(path, page(path, title, desc, body, ld, [("/", "Home"), (path, h1)], modified=modified))
 
 def guides():
     ex = ship_by("symphony-of-the-seas")
@@ -308,10 +328,10 @@ def home():
 <h2>Ships by cruise line</h2><ul class="cards">{lines}</ul>
 <h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li></ul>
 <h2>How it works</h2><p>For every ship we take the deck-by-deck listing of the current deck plan, mark each deck as cabins, public venues or a mix, and flag cabin decks that sit directly under pools and sports areas or over bars and theatres. Then we add ship-specific tips and cite every source. We are independent: no cruise line pays for coverage. <a href="{u('/methodology/')}">Sources and methods</a>.</p>'''
-    write("/", page("/", "Which Cabin: Best Cruise Cabins and Decks, Ship by Ship", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body))
+    write("/", page("/", "Which Cabin: Best Cruise Cabins and Decks, Ship by Ship", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, modified=ADDED))
 
-def simple(path, title, desc, h1, inner, crumb=None, noindex=False):
-    write(path, page(path, title, desc, f'<article class="prose"><h1>{E(h1)}</h1>{inner}</article>', None, [("/", "Home"), (path, crumb or h1)], noindex=noindex))
+def simple(path, title, desc, h1, inner, crumb=None, noindex=False, modified=TODAY):
+    write(path, page(path, title, desc, f'<article class="prose"><h1>{E(h1)}</h1>{inner}</article>', None, [("/", "Home"), (path, crumb or h1)], noindex=noindex, modified=modified))
 
 def about_legal():
     lines = ", ".join(L["name"] for L in LINES.values())
@@ -320,14 +340,14 @@ def about_legal():
 <h2>What we cover</h2><p>{len(SHIPS)} ships from {E(lines)}. We add ships when we can check their layout against the line's own deck plan.</p>
 <h2>How we work</h2><p>Every ship page starts from the deck-by-deck layout of the current deck plan, which we turn into an original deck noise map. Ship facts come from cited sources. We write every tip ourselves and leave out anything we cannot verify. See <a href="{u('/methodology/')}">sources and methods</a>.</p>
 <h2>Independence</h2><p>Which Cabin is not affiliated with, endorsed by or sponsored by any cruise line. Ship and line names are used only to identify the ships we describe.</p>
-<p>Spotted something out of date after a refit? <a href="{u('/contact/')}">Tell us</a> and we will re-check it.</p>''')
+<p>Spotted something out of date after a refit? <a href="{u('/contact/')}">Tell us</a> and we will re-check it.</p>''', modified=ADDED)
     simple("/methodology/", f"Sources and Methods | {BRAND}", "Where Which Cabin's deck layouts, ship facts and cabin advice come from, and how the deck noise map is built.", "Sources and methods", f'''
-<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. All layouts were checked on {TODAY_H}.</p>
+<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026. Ships added after that were checked on 16 Nov 2026. Each ship page shows its own checked date.</p>
 <h2>The deck noise map</h2><p>We mark each deck as a cabin deck, a public deck or a mix. A cabin deck is marked quiet (green) when the decks directly above and below are also cabin decks with no listed venues. It is marked amber when it shares space with venues, sits directly below pools, sports, buffet or similar areas, or sits directly above bars, shops, theatres, dining or entertainment. Bridge, medical and crew areas are treated as neutral. This is a deck-level shortcut: a venue may only fill part of a deck, so always look up your exact cabin number on the line's deck plan.</p>
 <h2>Ship facts</h2><p>Class, builder, entry into service, gross tonnage and guest capacity come from each ship's Wikipedia infobox (which cites registers and line fact sheets) or the line's own pages, as credited on each page. If a figure was missing or unclear, we left it out.</p>
 <h2>General advice</h2><p>Motion advice follows the <a href="{CDC[1]}" rel="nofollow noopener">CDC Yellow Book chapter on motion sickness</a>. Other tips (noise from pool decks, elevators, connecting doors, partial-view categories) are our general guidance, not cruise line rules.</p>
 <h2>What we do not do</h2><p>We do not copy deck plan images or cruise line text. Diagrams on this site are our own. We do not publish prices or availability, which change daily.</p>
-<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods")
+<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
 <p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
 <h2>Photos</h2><p>The site currently uses no ship photos. We do not use cruise line photos or deck plan images without permission.</p>
