@@ -26,4 +26,6 @@ ul.picks li{margin:.3rem 0}ol.steps li{margin:.5rem 0}
 form.contact{display:grid;gap:.4rem;max-width:560px}form.contact label{font-weight:700}input,textarea{font:inherit;padding:.45rem .5rem;border:2px solid #6b7a83;border-radius:6px;background:#fff;color:var(--ink)}
 .form-status{padding:.6rem .8rem;border-radius:6px}.form-status.ok{background:#e3f4e6;color:#0f4d1c}
 footer.site{background:var(--navy);color:#eef3f6;padding:1.5rem 0;margin-top:2rem}footer.site a{color:#ffd59a}.flinks{line-height:2}.legal-line{font-size:.9rem;color:var(--muted)}footer .legal-line{color:#cfd9de}
+.consent{position:fixed;z-index:40;left:0;right:0;bottom:1rem;width:min(34rem,calc(100% - 2rem));margin:0 auto;background:#fff;color:var(--ink);border:2px solid var(--navy);border-radius:10px;box-shadow:0 10px 28px rgba(11,57,84,.18);padding:.75rem .9rem}
+.consent p{margin:0 0 .6rem}.consent .btnrow{margin:0}.consent[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

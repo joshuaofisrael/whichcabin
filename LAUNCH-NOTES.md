@@ -6,6 +6,27 @@ Domain whichcabin.com chosen by Joshua 15 Nov 2026. NOT bought (Namecheap sign-i
 
 Everything below is waiting on the domain. Do the steps in order.
 
+## Exact launch command
+
+The committed site stays in preview mode (links under `/whichcabin`, `noindex` on every page, no Cloudflare beacon, no GA4 loader, no `CNAME`). `--launch` is the switch. Do not commit the launch output unless you are actually launching.
+
+1. In `_build/build.py`, set the one-line constant `GA4_ID = ""` to the GA4 measurement id (`G-XXXXXXXXXX`). Leave it empty until then. `python3 _build/check.py --launch` exits 1 with `ga4-id-empty` while it is empty. The same check exits 1 if any page is missing the Cloudflare Web Analytics beacon or the GA4 loader (`https://www.googletagmanager.com/gtag/js?id=` plus that id).
+2. From the repo root, the launch command is:
+
+```
+./deploy.sh --launch "Launch on whichcabin.com"
+```
+
+That runs, in order, `python3 _build/build.py --launch`, `python3 _build/check.py --launch` and `python3 _build/legal_gate.py check`, then commits and pushes `main`. The launch build writes root-relative paths, `CNAME` containing `whichcabin.com`, `sitemap.xml` (with `lastmod`), `robots.txt`, `llms.txt` and the IndexNow key file `6d99be0a8662d09dadd3f19d2857201e.txt`.
+
+To run the launch build, check and legal gate without pushing:
+
+```
+python3 _build/build.py --launch && python3 _build/check.py --launch && python3 _build/legal_gate.py check
+```
+
+Put the preview output back afterwards with `python3 _build/build.py && python3 _build/check.py && python3 _build/legal_gate.py check`. Google Analytics 4 is on every launch page only after the visitor presses Accept. Consent Mode v2 defaults are denied until then. The Cloudflare beacon stays on every launch page either way.
+
 ## 1. Buy the domain (needs Joshua's yes on the exact price; never on Shabbat)
 - Namecheap, whichcabin.com, 1 year: $12.08 + $0.20 ICANN fee = about $12.28 (renews about $15.98/yr). Free WHOIS privacy, auto-renew on.
 - Log it straight away: P&L (/workspace/JI_Ventures_PnL.xlsx, LLC expense: domain, order number, amount, card) and the running total in /workspace/new-sites/evergreen-build-queue.md.
@@ -17,17 +38,15 @@ Everything below is waiting on the domain. Do the steps in order.
 - Add the Google Search Console TXT record on @ (step 5) at the same time to save a round trip.
 
 ## 3. Switch the repo to launch mode and enable the custom domain
-```
-cd /workspace/whichcabin && ./deploy.sh --launch "Launch on whichcabin.com"
-```
-This rebuilds with root paths (no /whichcabin prefix), removes noindex from every page, adds the Cloudflare beacon, writes the CNAME file (whichcabin.com), runs check.py --launch and the legal gate, then pushes.
+Run the exact launch command at the top of this file (`./deploy.sh --launch "Launch on whichcabin.com"`) only after `GA4_ID` is set. That rebuilds with root paths (no /whichcabin prefix), removes noindex from every page, adds the Cloudflare beacon and the consent-gated GA4 loader, writes the CNAME file (whichcabin.com), runs check.py --launch and the legal gate, then pushes.
 - Set the custom domain: `gh api -X PUT repos/joshuaofisrael/whichcabin/pages -f cname=whichcabin.com`
 - When the certificate is issued (check `gh api repos/joshuaofisrael/whichcabin/pages` until `https_certificate.state` is `approved`): `gh api -X PUT repos/joshuaofisrael/whichcabin/pages -F https_enforced=true`
 - Verify: `dig +short whichcabin.com`, `dig +short www.whichcabin.com`, `curl -sI https://whichcabin.com/` and `https://www.whichcabin.com/` (both 200 or www -> apex redirect), `curl -s https://whichcabin.com/ | grep -c noindex` = 0.
 - Note: after launch the github.io preview URL redirects to whichcabin.com automatically.
 
-## 4. Cloudflare Web Analytics (beacon)
+## 4. Cloudflare Web Analytics (beacon) and Google Analytics 4
 - The launch build already puts the shared JI Ventures Analytics 2 beacon token (eac63f2b..., the same token Coaster Map uses, requestHost match) on every page. Both CF accounts were at the Web Analytics site limit, so no new site entry was created; a site entry needs the live hostname anyway.
+- Google Analytics 4: paste the measurement id into `GA4_ID` in `_build/build.py` before the launch command. The loader uses Consent Mode v2 (denied until Accept). The privacy page names both Google Analytics 4 and Cloudflare Web Analytics. Cookie settings in the footer reopens the banner.
 - Confirm the beacon loads on the live site, then add whichcabin.com (requestHost) to /workspace/seo/tools/cf_rum_live.py / the daily "Stats" site list and the traffic sheet (JI_Ventures_Traffic.xlsx). Check the next day that non-bot views appear.
 
 ## 5. Google Search Console
