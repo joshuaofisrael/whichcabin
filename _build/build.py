@@ -26,7 +26,7 @@ def join_names(names):
     return ", ".join(names[:-1]) + " and " + names[-1]
 INDEXNOW_KEY = "6d99be0a8662d09dadd3f19d2857201e"
 CF_BEACON_TOKEN = "eac63f2b5dbc4539a2d95249baab6472"  # shared JI Ventures Analytics 2 token (requestHost match), same as Coaster Map. Launch build only.
-GA4_ID = ""  # Owner pastes a GA4 measurement id (G-XXXXXXXXXX) before launch. Empty string until then. check.py --launch fails while this is empty.
+GA4_ID = "G-HSNXLPKVXV"  # Owner pastes a GA4 measurement id (G-XXXXXXXXXX) before launch. Empty string until then. check.py --launch fails while this is empty.
 FORM_ENDPOINT = "https://formsubmit.co/4497ee41a1200e746e967998473d21da"
 LEGAL_LINE = "© 2026 Joshua Israel Ventures LLC. All rights reserved. Which Cabin is a trade name of Joshua Israel Ventures LLC, a Florida limited liability company."
 E = html.escape
