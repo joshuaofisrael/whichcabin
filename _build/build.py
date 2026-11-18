@@ -16,6 +16,7 @@ PREFIX = "" if LAUNCH else "/whichcabin"
 BRAND = "Which Cabin"
 TODAY = "2026-11-15"; TODAY_H = "15 Nov 2026"
 ADDED = "2026-11-16"  # ships added after the 15 Nov 2026 set
+ADDED2 = "2026-11-18"  # second ship batch (Mariner and Adventure of the Seas): bump lastmod only on pages whose listing actually changed
 MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 def humandate(iso):
     y, m, d = iso.split("-")
@@ -285,7 +286,7 @@ def ships_index():
 <div class="tablewrap"><table class="list"><thead><tr><th scope="col">Ship</th><th scope="col">Line</th><th scope="col">Class</th><th scope="col">Quiet cabin decks</th></tr></thead><tbody>{rows}</tbody></table></div>
 {faq_block(faqs)}'''
     h1 = "Cruise ship cabin guides"
-    write("/ships/", page("/ships/", "Which Ship Cabin Should I Book", f"Which cabin should I book? Open one of {len(SHIPS)} ships for its quiet decks, seasickness cabins and the decks to avoid.", body, [article_ld(h1, "/ships/", ADDED), faq_ld(faqs)], [("/", "Home"), ("/ships/", "Ships")], modified=ADDED, og_type="article"))
+    write("/ships/", page("/ships/", "Which Ship Cabin Should I Book", f"Which cabin should I book? Open one of {len(SHIPS)} ships for its quiet decks, seasickness cabins and the decks to avoid.", body, [article_ld(h1, "/ships/", ADDED2), faq_ld(faqs)], [("/", "Home"), ("/ships/", "Ships")], modified=ADDED2, og_type="article"))
 
 def line_pages():
     cards = []
@@ -310,7 +311,8 @@ def line_pages():
 <ul class="cards">{items}</ul><p class="note">Official fleet pages: {link((L["name"] + " ships", L["url"]))}. Which Cabin is independent and not affiliated with {E(L["name"])}.</p>
 {faq_block(faqs)}{related(p)}'''
         desc = f'Which {L["short"]} cabin should I book? Quiet decks, seasickness picks and cabins to avoid on {len(ss)} ships, including {ss[0]["name"]}.'
-        write(p, page(p, f'Which {L["short"]} Cabin Should I Book', desc, body, [article_ld(h1, p, ADDED), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])], modified=ADDED, og_type="article"))
+        line_modified = ADDED2 if k == "royal-caribbean" else ADDED
+        write(p, page(p, f'Which {L["short"]} Cabin Should I Book', desc, body, [article_ld(h1, p, line_modified), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])], modified=line_modified, og_type="article"))
         cards.append(f'<li class="card"><h2><a href="{u(p)}">{E(L["name"])}</a></h2><p>{", ".join(E(s["name"]) for s in ss)}</p></li>')
     faqs = [
         ("Which cruise line cabin should I book?", "Pick the line, then the ship. Each line page lists the quiet cabin decks and the deck under the pool for every ship we cover."),
@@ -318,7 +320,7 @@ def line_pages():
     ]
     h1 = "Cabin guides by cruise line"
     body = f'<h1>{h1}</h1><p class="answer">Choose a cruise line to see every ship we cover, with its quiet decks and the decks under the pool.</p><ul class="cards">{"".join(cards)}</ul>{faq_block(faqs)}{related("/lines/")}'
-    write("/lines/", page("/lines/", "Which Cruise Line Cabin to Book", f"Which cruise line cabin should I book? Quiet decks and the deck under the pool on {len(LINES)} lines.", body, [article_ld(h1, "/lines/", ADDED), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines")], modified=ADDED, og_type="article"))
+    write("/lines/", page("/lines/", "Which Cruise Line Cabin to Book", f"Which cruise line cabin should I book? Quiet decks and the deck under the pool on {len(LINES)} lines.", body, [article_ld(h1, "/lines/", ADDED2), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines")], modified=ADDED2, og_type="article"))
 
 def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED):
     body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{related(path)}</article>'
@@ -353,7 +355,7 @@ def guides():
       [("Where should I book a cabin if I get seasick?", "Midship on the lowest passenger decks, ideally with a window or balcony so you can see the horizon."),
        ("Is an aft cabin bad for seasickness?", "Aft is better than forward but usually worse than midship, because the ends of the ship move more when it pitches."),
        ("Do balcony cabins help with seasickness?", "They can. The CDC lists a visual horizon reference among the countermeasures shown to give some protection on ships, and a balcony or window gives you one.")],
-      [CDC])
+      [CDC], modified=ADDED2)
 
     guide("/guides/cruise-cabins-to-avoid/", "Which Cruise Cabins Should I Avoid", "Cruise ship cabins to avoid",
       "Which cruise cabins to avoid: under the pool deck, over the theatre or nightclub, forward low decks, next to elevators, connecting doors and partial views.", f'''
@@ -370,7 +372,7 @@ def guides():
       [("Which cabin is the worst on a cruise ship?", "For most people, a cabin directly under the pool deck or directly above a nightclub or theatre, because of noise. For people prone to seasickness, a low forward cabin."),
        ("Are cabins near the elevator bad?", "They are convenient but get more foot traffic and noise. A few doors away from the elevator lobby gives you most of the convenience with less noise."),
        ("What does obstructed view mean on a cruise?", "Something, usually a lifeboat or part of the ship's structure, blocks some of the window or balcony view. Lines price and label these cabins separately.")],
-      [CDC] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[6:9]])
+      [CDC] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[6:9]], modified=ADDED2)
 
     rows = "".join(f'<tr><td><a href="{u(ship_path(s))}">{E(s["name"])}</a></td><td>{E(LINES[s["line"]]["short"])}</td><td>{E(rng(s["_quiet"])) or "None"}</td><td>{E(rng(s["_pool"])) or "None"}</td></tr>' for s in SHIPS)
     guide("/guides/quietest-cruise-cabins/", "Which Cruise Cabin Decks Are Quietest", "The quietest cabin decks on every big cruise ship",
@@ -381,7 +383,7 @@ def guides():
 <p>You may cite or link this table with a credit to Which Cabin.</p>''',
       [("What is the quietest cabin on a cruise ship?", "A midship cabin on a deck with cabin decks directly above and below, a few doors from the elevators and not next to a connecting door or service area."),
        ("Are higher decks quieter on a cruise ship?", "Not automatically. The top cabin deck is often directly under the pool or sports deck. The quietest decks are usually in the middle of the ship's cabin block.")],
-      [(f'CruiseMapper: {s["name"]} deck plans', DECKS[s["cm"]]["index"]) for s in SHIPS[:4]] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:4]])
+      [(f'CruiseMapper: {s["name"]} deck plans', DECKS[s["cm"]]["index"]) for s in SHIPS[:4]] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:4]], modified=ADDED2)
 
 def home():
     lines = "".join(f'<li class="card"><h3><a href="{u("/lines/" + k + "/")}">{E(L["name"])}</a></h3><p>' + ", ".join(f'<a href="{u(ship_path(s))}">{E(s["name"])}</a>' for s in SHIPS if s["line"] == k) + '</p></li>' for k, L in LINES.items())
@@ -397,7 +399,7 @@ def home():
 <h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li></ul>
 <h2>How it works</h2><p>For every ship we take the deck-by-deck listing of the current deck plan, mark each deck as cabins, public venues or a mix, and flag cabin decks that sit directly under pools and sports areas or over bars and theatres. Then we add ship-specific tips and cite every source. We are independent: no cruise line pays for coverage. <a href="{u('/methodology/')}">Sources and methods</a>.</p>
 {faq_block(faqs)}'''
-    write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED))
+    write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED2))
 
 def simple(path, title, desc, h1, inner, crumb=None, noindex=False, modified=TODAY):
     write(path, page(path, title, desc, f'<article class="prose"><h1>{E(h1)}</h1>{inner}</article>', None, [("/", "Home"), (path, crumb or h1)], noindex=noindex, modified=modified))
@@ -409,14 +411,14 @@ def about_legal():
 <h2>What we cover</h2><p>{len(SHIPS)} ships from {E(lines)}. We add ships when we can check their layout against the line's own deck plan.</p>
 <h2>How we work</h2><p>Every ship page starts from the deck-by-deck layout of the current deck plan, which we turn into an original deck noise map. Ship facts come from cited sources. We write every tip ourselves and leave out anything we cannot verify. See <a href="{u('/methodology/')}">sources and methods</a>.</p>
 <h2>Independence</h2><p>Which Cabin is not affiliated with, endorsed by or sponsored by any cruise line. Ship and line names are used only to identify the ships we describe.</p>
-<p>Spotted something out of date after a refit? <a href="{u('/contact/')}">Tell us</a> and we will re-check it.</p>''', modified=ADDED)
+<p>Spotted something out of date after a refit? <a href="{u('/contact/')}">Tell us</a> and we will re-check it.</p>''', modified=ADDED2)
     simple("/methodology/", f"Sources and Methods | {BRAND}", "Where Which Cabin's deck layouts, ship facts and cabin advice come from, and how the deck noise map is built.", "Sources and methods", f'''
-<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026. Ships added after that were checked on 16 Nov 2026. Each ship page shows its own checked date.</p>
+<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026, most of the rest on 16 Nov 2026, and a further batch on 18 Nov 2026. Each ship page shows its own checked date.</p>
 <h2>The deck noise map</h2><p>We mark each deck as a cabin deck, a public deck or a mix. A cabin deck is marked quiet (green) when the decks directly above and below are also cabin decks with no listed venues. It is marked amber when it shares space with venues, sits directly below pools, sports, buffet or similar areas, or sits directly above bars, shops, theatres, dining or entertainment. Bridge, medical and crew areas are treated as neutral. This is a deck-level shortcut: a venue may only fill part of a deck, so always look up your exact cabin number on the line's deck plan.</p>
 <h2>Ship facts</h2><p>Class, builder, entry into service, gross tonnage and guest capacity come from each ship's Wikipedia infobox (which cites registers and line fact sheets) or the line's own pages, as credited on each page. If a figure was missing or unclear, we left it out.</p>
 <h2>General advice</h2><p>Motion advice follows the <a href="{CDC[1]}" rel="nofollow noopener">CDC Yellow Book chapter on motion sickness</a>. Other tips (noise from pool decks, elevators, connecting doors, partial-view categories) are our general guidance, not cruise line rules.</p>
 <h2>What we do not do</h2><p>We do not copy deck plan images or cruise line text. Diagrams on this site are our own. We do not publish prices or availability, which change daily.</p>
-<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED)
+<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED2)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
 <p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
 <h2>Photos</h2><p>The site currently uses no ship photos. We do not use cruise line photos or deck plan images without permission.</p>

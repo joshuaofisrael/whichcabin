@@ -1,6 +1,6 @@
 # Which Cabin
 
-> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on 82 of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked 15 Nov 2026.
+> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on 84 of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked 15 Nov 2026.
 
 Independent; not affiliated with any cruise line. Layouts change; confirm on the line's deck plan.
 
@@ -30,6 +30,8 @@ Independent; not affiliated with any cruise line. Layouts change; confirm on the
 - [Independence of the Seas](https://whichcabin.com/ships/independence-of-the-seas/) (Royal Caribbean): quiet cabin decks 7 to 9; cabin deck under pools 10, 12
 - [Navigator of the Seas](https://whichcabin.com/ships/navigator-of-the-seas/) (Royal Caribbean): quiet cabin decks 7 to 9; cabin deck under pools 10, 12
 - [Voyager of the Seas](https://whichcabin.com/ships/voyager-of-the-seas/) (Royal Caribbean): quiet cabin decks 7 to 9; cabin deck under pools 10, 12
+- [Mariner of the Seas](https://whichcabin.com/ships/mariner-of-the-seas/) (Royal Caribbean): quiet cabin decks 7 to 9; cabin deck under pools 10, 12
+- [Adventure of the Seas](https://whichcabin.com/ships/adventure-of-the-seas/) (Royal Caribbean): quiet cabin decks 7 to 9; cabin deck under pools 10, 12
 - [Carnival Celebration](https://whichcabin.com/ships/carnival-celebration/) (Carnival): quiet cabin decks 10 to 12, 14; cabin deck under pools 15 to 17
 - [Mardi Gras](https://whichcabin.com/ships/mardi-gras/) (Carnival): quiet cabin decks 10 to 12, 14; cabin deck under pools 15 to 17
 - [Carnival Jubilee](https://whichcabin.com/ships/carnival-jubilee/) (Carnival): quiet cabin decks 10 to 12, 14; cabin deck under pools 15 to 17
