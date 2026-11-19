@@ -73,7 +73,12 @@ GUIDE_LINKS = [
     ("/guides/quietest-cruise-cabins/", "Quietest cabin decks"),
     ("/guides/best-cabin-for-seasickness/", "Best cabin for seasickness"),
     ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid"),
+    ("/guides/connecting-cruise-cabins/", "Connecting cruise cabins"),
 ]
+def article_thumb(src, alt, caption="AI-generated image"):
+    return (f'<figure class="article-thumb"><a href="{u("/image-policy/")}">'
+            f'<img src="{u(src)}" alt="{E(alt)}" width="1280" height="720" loading="lazy"></a>'
+            f'<figcaption><a href="{u("/image-policy/")}">{E(caption)}</a></figcaption></figure>')
 def related(path, extra=()):
     seen, items = set(), []
     for p, n in list(extra) + GUIDE_LINKS + [("/ships/", "All ships"), ("/lines/", "Cruise lines")]:
@@ -371,8 +376,11 @@ def line_pages():
     body = f'<h1>{h1}</h1><p class="answer">Choose a cruise line to see every ship we cover, with its quiet decks and the decks under the pool.</p><ul class="cards">{"".join(cards)}</ul>{faq_block(faqs)}{related("/lines/")}'
     write("/lines/", page("/lines/", "Which Cruise Line Cabin to Book", f"Which cruise line cabin should I book? Quiet decks and the deck under the pool on {len(LINES)} lines.", body, [article_ld(h1, "/lines/", ADDED2), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines")], modified=ADDED2, og_type="article"))
 
-def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED):
-    body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{related(path)}</article>'
+def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED, thumb=None, mid=None, end_related=True):
+    thumb_h = article_thumb(*thumb) if thumb else ""
+    mid_h = mid or ""
+    end_h = related(path) if end_related else ""
+    body = f'<article class="prose"><h1>{E(h1)}</h1>{thumb_h}{inner}{mid_h}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{end_h}</article>'
     write(path, page(path, title, desc, body, [article_ld(h1, path, modified), faq_ld(faqs)], [("/", "Home"), (path, h1)], modified=modified, og_type="article"))
 
 def guides():
@@ -414,7 +422,7 @@ def guides():
 <li><strong>Under the running track or sports court.</strong> Footsteps and ball games overhead.</li>
 <li><strong>Low and forward.</strong> Closest to the bow thrusters and anchor gear, which can be loud when docking, and forward cabins feel the most motion.</li>
 <li><strong>Next to elevators, stair landings and crew doors.</strong> Foot traffic and doors banging. Unlabelled blocks on a deck plan are usually service areas.</li>
-<li><strong>Connecting cabins</strong> if you are not travelling with the people next door: the connecting door lets more sound through than a wall.</li>
+<li><strong>Connecting cabins</strong> if you are not travelling with the people next door: the connecting door lets more sound through than a wall. See <a href="{u('/guides/connecting-cruise-cabins/')}">who connecting cabins suit</a>.</li>
 <li><strong>Partial or obstructed view.</strong> Usually lifeboats or structure in the way. Lines label these, so read the category name.</li>
 <li><strong>Inward-facing or promenade-view balconies</strong> if you want a sea view. They overlook an inside neighbourhood or promenade instead.</li></ol>
 <h2>Decks directly under the pool, ship by ship</h2><div class="tablewrap"><table class="list"><thead><tr><th scope="col">Ship</th><th scope="col">Cabin deck under pool, sports or buffet areas</th></tr></thead><tbody>{"".join(f'<tr><td><a href="{u(ship_path(s))}">{E(s["name"])}</a></td><td>{E(rng(s["_pool"])) or "None directly under"}</td></tr>' for s in SHIPS)}</tbody></table></div>''',
@@ -434,6 +442,74 @@ def guides():
        ("Are higher decks quieter on a cruise ship?", "Not automatically. The top cabin deck is often directly under the pool or sports deck. The quietest decks are usually in the middle of the ship's cabin block.")],
       [(f'CruiseMapper: {s["name"]} deck plans', DECKS[s["cm"]]["index"]) for s in SHIPS[:4]] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:4]], modified=ADDED2)
 
+    # NEEDS IMAGE before merge: assets/connecting-cruise-cabins.jpg
+    # Scene: cruise ship balcony cabin interior with two connecting doors visible, natural daylight, camera look, no logos, no readable text, no real faces.
+    connect_mid = next_reads("/guides/connecting-cruise-cabins/", [
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Connecting doors are one of the noise trade-offs if you are not travelling as a group."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck and position still matter more than the connecting door alone."),
+        ("/guides/quietest-cruise-cabins/", "Quietest cabin decks", "Sandwiched decks for every ship we cover."),
+        ("/guides/best-cabin-for-seasickness/", "Best cabin for seasickness", "Low and midship still wins if motion bothers you."),
+    ], "Keep reading")
+    connect_end = next_reads("/guides/connecting-cruise-cabins/", [
+        ("/ships/", "Ship cabin guides", "Open your ship for its deck noise map and sister ships."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Under the pool, over nightlife, elevators and partial views."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck first, then spot on the deck, then room type."),
+        ("/lines/", "Cruise line hubs", "Quiet decks by line before you open a ship page."),
+    ], "Next reads")
+    guide("/guides/connecting-cruise-cabins/",
+      "Who Should Book Connecting Cruise Cabins",
+      "Connecting cruise cabins: who they suit, and the noise trade-off",
+      "Connecting cruise cabins suit families and groups who want a door between rooms. Light sleepers next to strangers should skip them.",
+      f'''
+<div class="answer"><p><strong>Short answer:</strong> book connecting cabins when your party fills both rooms and wants a private door between them. Skip a connecting cabin if the next room belongs to strangers: the door lets more sound through than a solid wall. Look for the connecting symbol on the line's deck plan, not only adjacent cabin numbers.</p></div>
+<!-- NEEDS IMAGE before merge: assets/connecting-cruise-cabins.jpg
+     Scene: cruise ship balcony cabin with two connecting doors visible, natural daylight, camera look; no logos, no readable text, no real faces. -->
+<p>Connecting cabins (also called interconnecting or connecting staterooms) are two neighbouring rooms with an internal door. Each room keeps its own hallway door, bathroom and beds. When both bookings are yours, the steward can unlock the connecting door so the rooms work as one suite with an extra bathroom.</p>
+<h2>Who connecting cabins are for</h2>
+<ul>
+<li><strong>Families who need two bathrooms and a door they control.</strong> Royal Caribbean's rooms page lists connecting rooms among the ways larger families stay close without one huge suite. Carnival's stateroom overview describes connecting rooms as cabins with a common door between them. Norwegian's stateroom page has a dedicated Connecting Staterooms section for groups who want to stay close.</li>
+<li><strong>Friends or multi-generational groups</strong> who want privacy at night but easy access by day.</li>
+<li><strong>Anyone who needs a minor in a second room.</strong> Lines still require an adult on the booking for each stateroom; connecting doors do not change that rule. Check the line's current minor policy before you lock the booking.</li>
+</ul>
+<p>Celebrity's Edge-series stateroom page states there are 178 possible connecting stateroom options on those ships, including combinations that join two Edge staterooms with Infinite Verandas, and suite pairs that sleep larger parties. Princess publishes interconnecting two-bedroom family suites on select ships (Ruby, Emerald, Crown and Caribbean Princess) that sleep up to eight and must be reserved through customer service rather than online; Star Princess fact sheet language also lists 100 connecting staterooms on that ship.</p>
+<h2>The noise trade-off</h2>
+<p>A connecting door is thinner than a cabin wall. If you book one connecting cabin and strangers book the other, you hear more of their TV, conversations and hallway-side door use than you would through a solid bulkhead. Our <a href="{u('/guides/cruise-cabins-to-avoid/')}">cabins to avoid</a> guide flags connecting cabins for light sleepers who are not travelling with the people next door. If quiet sleep is the priority, pick a non-connecting cabin on a <a href="{u('/guides/quietest-cruise-cabins/')}">sandwiched cabin deck</a> instead.</p>
+<p>When both rooms are yours, the trade-off flips: the door is useful, and you control both sides. Keep the connecting door closed (and locked) when someone is napping, and ask the steward to unlock it after embarkation if it arrives locked.</p>
+<h2>How to spot them on a deck plan</h2>
+<ol class="steps">
+<li>Open the line's official deck plan for your ship (linked from each of our <a href="{u('/ships/')}">ship pages</a>).</li>
+<li>Find the legend symbol for connecting or interconnecting staterooms (often a double arrow or a marked shared wall).</li>
+<li>Confirm both cabin numbers show that symbol between them. Cabins that only sit next to each other are adjoining, not connecting.</li>
+<li>Check each room's occupancy on the plan or booking screen. Connecting does not merge occupancy limits: each cabin still has its own maximum.</li>
+</ol>
+<aside class="compare" aria-label="Check another guide"><h2>Check another guide</h2>
+<p>Connecting rooms are one location choice. Deck noise and motion still matter.</p>
+<p class="compare-links"><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a> · <a href="{u('/guides/cruise-cabins-to-avoid/')}">Cabins to avoid</a> · <a href="{u('/guides/quietest-cruise-cabins/')}">Quietest decks</a> · <a href="{u('/ships/')}">All ships</a></p></aside>
+<h2>What connecting cabins are not</h2>
+<ul>
+<li><strong>Not a guarantee of a quiet deck.</strong> A connecting pair under the pool or over a theatre has the same overhead or underfoot noise as any other cabin there. Use the ship page's deck noise map first.</li>
+<li><strong>Not the same as a suite.</strong> Two connecting insides or balconies give two bathrooms and more floor space, but they do not automatically include suite lounges or other suite perks unless the line's category says so (Celebrity documents some Edge suite-plus-non-suite connecting pairs that share Retreat access; that is a line-specific rule, not a fleetwide promise).</li>
+<li><strong>Not advice to book or spend.</strong> We do not publish prices or sailings. This page only explains who the layout suits and what the deck plan symbols mean.</li>
+</ul>
+''',
+      [("Who should book connecting cruise cabins?", "Families and groups who will occupy both rooms and want a private door between them. Light sleepers next to another party should choose a non-connecting cabin."),
+       ("Are connecting cabins noisier?", "The connecting door passes more sound than a solid wall. That helps when both rooms are yours and hurts when strangers are on the other side."),
+       ("How do I find connecting cabins on a deck plan?", "Use the line's deck plan legend for the connecting symbol between two cabin numbers. Adjacent cabins without that symbol do not open into each other."),
+       ("Do connecting cabins change occupancy rules?", "No. Each stateroom keeps its own maximum occupancy, and minors still need an adult on the booking per the line's rules.")],
+      [
+        ("Royal Caribbean: cruise rooms and suites (connecting rooms)", "https://www.royalcaribbean.com/cruise-rooms"),
+        ("Carnival: staterooms (connecting rooms)", "https://www.carnival.com/staterooms"),
+        ("Norwegian Cruise Line: staterooms (Connecting Staterooms)", "https://www.ncl.com/staterooms"),
+        ("Celebrity Cruises: staterooms (connecting options on Edge series)", "https://www.celebritycruises.com/things-to-do-onboard/staterooms"),
+        ("Princess Cruises: staterooms (interconnecting family suites)", "https://www.princess.com/staterooms"),
+        ("Princess Cruises: Star Princess fact sheet (100 connecting staterooms)", "https://www.princess.com/en-uk/news/backgrounders-and-fact-sheets/star-princess-fact-sheet"),
+      ],
+      modified=ADDED3,
+      thumb=("/assets/connecting-cruise-cabins.jpg", "Empty cruise balcony cabin with a connecting door between two rooms", "AI-generated image")
+        if os.path.isfile(os.path.join(ROOT, "assets/connecting-cruise-cabins.jpg")) else None,
+      mid=connect_mid + connect_end,
+      end_related=False)
+
 def home():
     lines = "".join(f'<li class="card"><h3><a href="{u("/lines/" + k + "/")}">{E(L["name"])}</a></h3><p>' + ", ".join(f'<a href="{u(ship_path(s))}">{E(s["name"])}</a>' for s in SHIPS if s["line"] == k) + '</p></li>' for k, L in LINES.items())
     faqs = [
@@ -445,7 +521,7 @@ def home():
 <p class="answer">Deck-by-deck guides to the best cabins and the ones to avoid on {len(SHIPS)} of the biggest cruise ships. We map what is above and below every cabin deck from published deck-by-deck listings, with a link to each line's own deck plan, so you can ask for a quiet cabin before you book.</p>
 <p class="btnrow"><a class="btn" href="{u('/ships/')}">Find your ship</a> <a class="btn alt" href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a></p></section>
 <h2>Ships by cruise line</h2><ul class="cards">{lines}</ul>
-<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li></ul>
+<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li><li><a href="{u('/guides/connecting-cruise-cabins/')}">Connecting cruise cabins</a></li></ul>
 <h2>How it works</h2><p>For every ship we take the deck-by-deck listing of the current deck plan, mark each deck as cabins, public venues or a mix, and flag cabin decks that sit directly under pools and sports areas or over bars and theatres. Then we add ship-specific tips and cite every source. We are independent: no cruise line pays for coverage. <a href="{u('/methodology/')}">Sources and methods</a>.</p>
 {faq_block(faqs)}'''
     write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED2))
@@ -469,11 +545,11 @@ def about_legal():
 <h2>What we do not do</h2><p>We do not copy deck plan images or cruise line text. Diagrams on this site are our own. We do not publish prices or availability, which change daily.</p>
 <h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED3)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
-<p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
-<h2>Photos</h2><p>The site currently uses no ship photos. We do not use cruise line photos or deck plan images without permission.</p>
-<h2>AI-generated images</h2><p>If we add AI-generated illustrations, each will carry a visible "AI-generated image" credit, will not depict real people, and will never be presented as a photo of a real ship or cabin.</p>
+<p>Last updated 19 Nov 2026.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
+<h2>Photos</h2><p>We do not use cruise line photos or deck plan images without permission. Article thumbnails, when present, are AI-generated news-photo style images hosted on this site.</p>
+<h2>AI-generated images</h2><p>Each AI-generated article image carries a visible "AI-generated image" credit that links here, does not depict real identifiable people, and is never presented as a photograph of a specific real ship or branded cabin.</p>
 <h2>Logos and trademarks</h2><p>We do not display cruise line logos. Names are used only to identify ships.</p>
-<h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy")
+<h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy", modified=ADDED3)
     contact = f'''<p>Questions, corrections after a refit, or a ship you want us to cover next? Send a message and we will reply by email.</p>
 <h2>Corrections</h2><p>Include the page address, what looks wrong and, if you can, a link to the cruise line's deck plan that shows it. We update the "checked" date when we re-verify.</p>
 <p class="form-status" id="contact-status" role="status" hidden></p>
@@ -545,7 +621,7 @@ def extras():
     open(os.path.join(ROOT, "robots.txt"), "w").write("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + f"Sitemap: {BASE_URL}sitemap.xml\n")
     open(os.path.join(ROOT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{url(p)}</loc><lastmod>{m}</lastmod></url>\n" for p, m in PAGES) + "</urlset>\n")
     ll = [f"# {BRAND}", "", f"> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on {len(SHIPS)} of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked {TODAY_H}.", "", "Independent; not affiliated with any cruise line. Layouts change; confirm on the line's deck plan.", "", "## Guides",
-          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
+          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Connecting cruise cabins]({url('/guides/connecting-cruise-cabins/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
     for s in SHIPS: ll.append(f"- [{s['name']}]({url(ship_path(s))}) ({LINES[s['line']]['short']}): quiet cabin decks {rng(s['_quiet']) or 'none'}; cabin deck under pools {rng(s['_pool']) or 'none'}")
     open(os.path.join(ROOT, "llms.txt"), "w").write("\n".join(ll) + "\n")
     open(os.path.join(ROOT, "favicon.svg"), "w").write(LOGO.replace('width="34" height="34" ', 'xmlns="http://www.w3.org/2000/svg" ').replace(' aria-hidden="true" focusable="false"', ""))
