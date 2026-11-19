@@ -17,6 +17,8 @@ BRAND = "Which Cabin"
 TODAY = "2026-11-15"; TODAY_H = "15 Nov 2026"
 ADDED = "2026-11-16"  # ships added after the 15 Nov 2026 set
 ADDED2 = "2026-11-18"  # second ship batch (Mariner and Adventure of the Seas): bump lastmod only on pages whose listing actually changed
+ADDED3 = "2026-11-19"  # AdSense readiness, Freedom refresh, Mariner/Adventure differentiation
+ADSENSE_PUB = "ca-pub-5681559774142917"
 MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 def humandate(iso):
     y, m, d = iso.split("-")
@@ -71,13 +73,53 @@ GUIDE_LINKS = [
     ("/guides/quietest-cruise-cabins/", "Quietest cabin decks"),
     ("/guides/best-cabin-for-seasickness/", "Best cabin for seasickness"),
     ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid"),
+    ("/guides/connecting-cruise-cabins/", "Connecting cruise cabins"),
 ]
+def article_thumb(src, alt, caption="AI-generated image"):
+    return (f'<figure class="article-thumb"><a href="{u("/image-policy/")}">'
+            f'<img src="{u(src)}" alt="{E(alt)}" width="1280" height="720" loading="lazy"></a>'
+            f'<figcaption><a href="{u("/image-policy/")}">{E(caption)}</a></figcaption></figure>')
 def related(path, extra=()):
     seen, items = set(), []
     for p, n in list(extra) + GUIDE_LINKS + [("/ships/", "All ships"), ("/lines/", "Cruise lines")]:
         if p == path or p in seen: continue
         seen.add(p); items.append((p, n))
     return '<p class="related"><strong>Related:</strong> ' + " · ".join(f'<a href="{u(p)}">{E(n)}</a>' for p, n in items) + "</p>"
+def next_reads(path, items, heading="Keep reading"):
+    """3-4 closely related next-read links. items: (path, title, blurb). No ad-like styling."""
+    out = []
+    for p, title, blurb in items:
+        if p == path: continue
+        out.append(f'<li><a href="{u(p)}"><strong>{E(title)}</strong></a><span>{E(blurb)}</span></li>')
+        if len(out) >= 4: break
+    if not out: return ""
+    return f'<aside class="nextreads" aria-label="{E(heading)}"><h2>{E(heading)}</h2><ul>{"".join(out)}</ul></aside>'
+def compare_box(s):
+    """Lookup-page 'check another ship' box: sisters + line hub + ships index."""
+    L = LINES[s["line"]]
+    opts = []
+    for slug in s.get("sister") or []:
+        o = ship_by(slug)
+        if o: opts.append(f'<a href="{u(ship_path(o))}">{E(o["name"])}</a>')
+    opts.append(f'<a href="{u("/lines/" + s["line"] + "/")}">All {E(L["short"])} ships</a>')
+    opts.append(f'<a href="{u("/ships/")}">Every ship we cover</a>')
+    return ('<aside class="compare" aria-label="Check another ship"><h2>Check another ship</h2>'
+            f'<p>Compare {E(s["name"])} with a sister ship, or open the {E(L["short"])} hub.</p>'
+            f'<p class="compare-links">{" · ".join(opts)}</p></aside>')
+def _ship_read_items(s):
+    L = LINES[s["line"]]
+    items = [
+        (f'/lines/{s["line"]}/', f'{L["short"]} cabin guides', f'Quiet decks and the deck under the pool on every {L["short"]} ship we cover.'),
+        ("/guides/quietest-cruise-cabins/", "Quietest cabin decks", "Sandwiched cabin decks on every ship in one table."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Under the pool, over nightlife, connecting doors and partial views."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck first, then position on the deck, then room type."),
+    ]
+    for slug in (s.get("sister") or [])[:1]:
+        o = ship_by(slug)
+        if o:
+            items.insert(0, (ship_path(o), f'Which cabin on {o["name"]}', f'Sister ship: same class, its own deck noise map.'))
+            break
+    return items
 def ga4_head():
     if not LAUNCH: return ""
     # Consent Mode v2 defaults are denied. gtag.js is not fetched until consent.js runs after Accept.
@@ -86,6 +128,11 @@ def ga4_head():
             "'analytics_storage':'denied','functionality_storage':'denied','personalization_storage':'denied',"
             "'security_storage':'granted','wait_for_update':500});</script>"
             f'<script id="ga4-loader" type="text/plain" data-ga4-id="{E(GA4_ID)}" data-src="https://www.googletagmanager.com/gtag/js?id={E(GA4_ID)}"></script>')
+def adsense_head():
+    if not LAUNCH: return ""
+    # Head script + account meta for AdSense readiness; no ad units on the page.
+    return (f'<meta name="google-adsense-account" content="{E(ADSENSE_PUB)}">'
+            f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={E(ADSENSE_PUB)}" crossorigin="anonymous"></script>')
 def consent_banner():
     return f'''<div id="consent-banner" class="consent" hidden role="region" aria-label="Cookie settings"><p>Cloudflare Web Analytics does not use cookies. Google Analytics 4 loads only after you accept. <a href="{u('/privacy/')}">Privacy</a></p><div class="btnrow"><button type="button" class="btn" id="consent-accept">Accept</button><button type="button" class="btn alt" id="consent-reject">Reject</button></div></div>'''
 
@@ -116,7 +163,7 @@ def page(path, title, desc, body, jsonld=None, crumbs=None, noindex=False, legal
 <title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{canon}">
 <meta name="robots" content="{robots}">
 <meta property="og:type" content="{og_type}"><meta property="og:site_name" content="{BRAND}"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:url" content="{canon}"><meta property="og:image" content="{url('/og.png')}"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="{u('/favicon.svg')}" type="image/svg+xml"><link rel="stylesheet" href="{u('/assets/style.css')}?v=2">{ga4_head()}{ldh}
+<link rel="icon" href="{u('/favicon.svg')}" type="image/svg+xml"><link rel="stylesheet" href="{u('/assets/style.css')}?v=3">{ga4_head()}{adsense_head()}{ldh}
 </head><body><a class="skip" href="#main">Skip to content</a>
 <header class="site"><div class="wrap"><a class="brand" href="{u('/')}">{LOGO}<span>{BRAND}</span></a><nav class="main" aria-label="Main">{nav}</nav></div></header>
 <main id="main" class="wrap">{bc}{body}<!-- ad-slot: below-content (reserved; no ad code) --></main>
@@ -247,11 +294,17 @@ def ship_page(s):
     if fsrc is not wiki: srcs.append(wiki)
     srcs.append(CDC)
     sub_bits = [L["name"]] + ([facts["cls"]] if facts.get("cls") else []) + [f"deck plans checked {chk_h}"]
+    engage = s.get("checked") == ADDED3 or s.get("engage")
+    mid_reads = next_reads(ship_path(s), _ship_read_items(s), "Keep reading") if engage else ""
+    end_reads = next_reads(ship_path(s), _ship_read_items(s), "Next reads") if engage else ""
+    compare = compare_box(s) if engage else ""
+    related_block = related(path, [(f'/lines/{s["line"]}/', f'All {L["short"]} ships')]) if not engage else ""
     body = f'''<article class="prose wide"><h1>Which cabin to book on {E(s["name"])}</h1>
 <p class="sub">{E(" · ".join(sub_bits))}</p>
 <div class="answer"><p><strong>Quick answer</strong></p><ul>{"".join(qa)}</ul></div>
 <p>{E(s["name"])} has {len(cab)} decks with passenger cabins. Below is our deck noise map, which marks every deck by what is on it and what is directly above and below, followed by ship-specific tips and the cabins to think twice about. It is a planning shortcut: the line's own deck plan is always the final word on any cabin number.</p>
 {deck_chart(A, s)}
+{compare}
 <h2>Best cabins on {E(s["name"])} by traveller</h2>
 <ul class="picks">
 <li><strong>Light sleepers:</strong> {("cabins on " + decks_word(qn) + ", ideally midship and away from elevators.") if quiet else "a cabin at the far end of a deck from its listed venues."}</li>
@@ -259,6 +312,7 @@ def ship_page(s):
 <li><strong>Families:</strong> {"decks near the kids' areas (" + decks_word([r["num"] for r in A if any(re.search(r"Kids|Family|Surfside|Splashaway", x) for x in r["venues"])]) + ") save walking, but they are busier." if [r for r in A if any(re.search(r"Kids|Family|Surfside|Splashaway", x) for x in r["venues"])] else "a midship cabin on a quiet deck, close to a bank of elevators."}</li>
 <li><strong>Views:</strong> an outward-facing balcony on a quiet deck. Avoid any category the line labels as partial or obstructed view.</li>
 <li><strong>Budget:</strong> an interior cabin on a quiet deck gives the best sleep for the money; the deck matters more than the category for noise.</li></ul>
+{mid_reads}
 <h2>{E(s["name"])} tips</h2>{notes}
 <h2>Cabins to think twice about</h2><ul>{"".join(avoid)}</ul>
 <h2>{E(s["name"])} at a glance</h2><div class="tablewrap"><table class="stats"><tbody>{"".join(fr)}</tbody></table></div>
@@ -267,7 +321,7 @@ def ship_page(s):
 <section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">Frequently asked questions</h2>{"".join(f"<details><summary>{E(q)}</summary><p>{E(a)}</p></details>" for q, a in faqs)}</section>
 <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2><ul>{"".join(f"<li>{link(x)}</li>" for x in srcs)}</ul>
 <p class="note">Retrieved {chk_h}. Which Cabin is not affiliated with {E(L["name"])}. Deck layouts and cabin categories can change after refits; always confirm on the line's current deck plan before booking. See <a href="{u('/methodology/')}">how we build these pages</a>.</p></section>
-{related(path, [(f'/lines/{s["line"]}/', f'All {L["short"]} ships')])}</article>'''
+{end_reads}{related_block}</article>'''
     ld = [{"@context": "https://schema.org", "@type": "Article", "headline": f'Which cabin to book on {s["name"]}', "dateModified": chk, "datePublished": chk,
            "author": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "publisher": {"@type": "Organization", "name": BRAND, "url": BASE_URL, "logo": {"@type": "ImageObject", "url": url("/logo.png")}},
            "mainEntityOfPage": url(path), "about": {"@type": "Thing", "name": s["name"]}},
@@ -322,8 +376,11 @@ def line_pages():
     body = f'<h1>{h1}</h1><p class="answer">Choose a cruise line to see every ship we cover, with its quiet decks and the decks under the pool.</p><ul class="cards">{"".join(cards)}</ul>{faq_block(faqs)}{related("/lines/")}'
     write("/lines/", page("/lines/", "Which Cruise Line Cabin to Book", f"Which cruise line cabin should I book? Quiet decks and the deck under the pool on {len(LINES)} lines.", body, [article_ld(h1, "/lines/", ADDED2), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines")], modified=ADDED2, og_type="article"))
 
-def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED):
-    body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{related(path)}</article>'
+def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED, thumb=None, mid=None, end_related=True):
+    thumb_h = article_thumb(*thumb) if thumb else ""
+    mid_h = mid or ""
+    end_h = related(path) if end_related else ""
+    body = f'<article class="prose"><h1>{E(h1)}</h1>{thumb_h}{inner}{mid_h}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{end_h}</article>'
     write(path, page(path, title, desc, body, [article_ld(h1, path, modified), faq_ld(faqs)], [("/", "Home"), (path, h1)], modified=modified, og_type="article"))
 
 def guides():
@@ -365,7 +422,7 @@ def guides():
 <li><strong>Under the running track or sports court.</strong> Footsteps and ball games overhead.</li>
 <li><strong>Low and forward.</strong> Closest to the bow thrusters and anchor gear, which can be loud when docking, and forward cabins feel the most motion.</li>
 <li><strong>Next to elevators, stair landings and crew doors.</strong> Foot traffic and doors banging. Unlabelled blocks on a deck plan are usually service areas.</li>
-<li><strong>Connecting cabins</strong> if you are not travelling with the people next door: the connecting door lets more sound through than a wall.</li>
+<li><strong>Connecting cabins</strong> if you are not travelling with the people next door: the connecting door lets more sound through than a wall. See <a href="{u('/guides/connecting-cruise-cabins/')}">who connecting cabins suit</a>.</li>
 <li><strong>Partial or obstructed view.</strong> Usually lifeboats or structure in the way. Lines label these, so read the category name.</li>
 <li><strong>Inward-facing or promenade-view balconies</strong> if you want a sea view. They overlook an inside neighbourhood or promenade instead.</li></ol>
 <h2>Decks directly under the pool, ship by ship</h2><div class="tablewrap"><table class="list"><thead><tr><th scope="col">Ship</th><th scope="col">Cabin deck under pool, sports or buffet areas</th></tr></thead><tbody>{"".join(f'<tr><td><a href="{u(ship_path(s))}">{E(s["name"])}</a></td><td>{E(rng(s["_pool"])) or "None directly under"}</td></tr>' for s in SHIPS)}</tbody></table></div>''',
@@ -385,6 +442,74 @@ def guides():
        ("Are higher decks quieter on a cruise ship?", "Not automatically. The top cabin deck is often directly under the pool or sports deck. The quietest decks are usually in the middle of the ship's cabin block.")],
       [(f'CruiseMapper: {s["name"]} deck plans', DECKS[s["cm"]]["index"]) for s in SHIPS[:4]] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:4]], modified=ADDED2)
 
+    # NEEDS IMAGE before merge: assets/connecting-cruise-cabins.jpg
+    # Scene: cruise ship balcony cabin interior with two connecting doors visible, natural daylight, camera look, no logos, no readable text, no real faces.
+    connect_mid = next_reads("/guides/connecting-cruise-cabins/", [
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Connecting doors are one of the noise trade-offs if you are not travelling as a group."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck and position still matter more than the connecting door alone."),
+        ("/guides/quietest-cruise-cabins/", "Quietest cabin decks", "Sandwiched decks for every ship we cover."),
+        ("/guides/best-cabin-for-seasickness/", "Best cabin for seasickness", "Low and midship still wins if motion bothers you."),
+    ], "Keep reading")
+    connect_end = next_reads("/guides/connecting-cruise-cabins/", [
+        ("/ships/", "Ship cabin guides", "Open your ship for its deck noise map and sister ships."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Under the pool, over nightlife, elevators and partial views."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck first, then spot on the deck, then room type."),
+        ("/lines/", "Cruise line hubs", "Quiet decks by line before you open a ship page."),
+    ], "Next reads")
+    guide("/guides/connecting-cruise-cabins/",
+      "Who Should Book Connecting Cruise Cabins",
+      "Connecting cruise cabins: who they suit, and the noise trade-off",
+      "Connecting cruise cabins suit families and groups who want a door between rooms. Light sleepers next to strangers should skip them.",
+      f'''
+<div class="answer"><p><strong>Short answer:</strong> book connecting cabins when your party fills both rooms and wants a private door between them. Skip a connecting cabin if the next room belongs to strangers: the door lets more sound through than a solid wall. Look for the connecting symbol on the line's deck plan, not only adjacent cabin numbers.</p></div>
+<!-- NEEDS IMAGE before merge: assets/connecting-cruise-cabins.jpg
+     Scene: cruise ship balcony cabin with two connecting doors visible, natural daylight, camera look; no logos, no readable text, no real faces. -->
+<p>Connecting cabins (also called interconnecting or connecting staterooms) are two neighbouring rooms with an internal door. Each room keeps its own hallway door, bathroom and beds. When both bookings are yours, the steward can unlock the connecting door so the rooms work as one suite with an extra bathroom.</p>
+<h2>Who connecting cabins are for</h2>
+<ul>
+<li><strong>Families who need two bathrooms and a door they control.</strong> Royal Caribbean's rooms page lists connecting rooms among the ways larger families stay close without one huge suite. Carnival's stateroom overview describes connecting rooms as cabins with a common door between them. Norwegian's stateroom page has a dedicated Connecting Staterooms section for groups who want to stay close.</li>
+<li><strong>Friends or multi-generational groups</strong> who want privacy at night but easy access by day.</li>
+<li><strong>Anyone who needs a minor in a second room.</strong> Lines still require an adult on the booking for each stateroom; connecting doors do not change that rule. Check the line's current minor policy before you lock the booking.</li>
+</ul>
+<p>Celebrity's Edge-series stateroom page states there are 178 possible connecting stateroom options on those ships, including combinations that join two Edge staterooms with Infinite Verandas, and suite pairs that sleep larger parties. Princess publishes interconnecting two-bedroom family suites on select ships (Ruby, Emerald, Crown and Caribbean Princess) that sleep up to eight and must be reserved through customer service rather than online; Star Princess fact sheet language also lists 100 connecting staterooms on that ship.</p>
+<h2>The noise trade-off</h2>
+<p>A connecting door is thinner than a cabin wall. If you book one connecting cabin and strangers book the other, you hear more of their TV, conversations and hallway-side door use than you would through a solid bulkhead. Our <a href="{u('/guides/cruise-cabins-to-avoid/')}">cabins to avoid</a> guide flags connecting cabins for light sleepers who are not travelling with the people next door. If quiet sleep is the priority, pick a non-connecting cabin on a <a href="{u('/guides/quietest-cruise-cabins/')}">sandwiched cabin deck</a> instead.</p>
+<p>When both rooms are yours, the trade-off flips: the door is useful, and you control both sides. Keep the connecting door closed (and locked) when someone is napping, and ask the steward to unlock it after embarkation if it arrives locked.</p>
+<h2>How to spot them on a deck plan</h2>
+<ol class="steps">
+<li>Open the line's official deck plan for your ship (linked from each of our <a href="{u('/ships/')}">ship pages</a>).</li>
+<li>Find the legend symbol for connecting or interconnecting staterooms (often a double arrow or a marked shared wall).</li>
+<li>Confirm both cabin numbers show that symbol between them. Cabins that only sit next to each other are adjoining, not connecting.</li>
+<li>Check each room's occupancy on the plan or booking screen. Connecting does not merge occupancy limits: each cabin still has its own maximum.</li>
+</ol>
+<aside class="compare" aria-label="Check another guide"><h2>Check another guide</h2>
+<p>Connecting rooms are one location choice. Deck noise and motion still matter.</p>
+<p class="compare-links"><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a> · <a href="{u('/guides/cruise-cabins-to-avoid/')}">Cabins to avoid</a> · <a href="{u('/guides/quietest-cruise-cabins/')}">Quietest decks</a> · <a href="{u('/ships/')}">All ships</a></p></aside>
+<h2>What connecting cabins are not</h2>
+<ul>
+<li><strong>Not a guarantee of a quiet deck.</strong> A connecting pair under the pool or over a theatre has the same overhead or underfoot noise as any other cabin there. Use the ship page's deck noise map first.</li>
+<li><strong>Not the same as a suite.</strong> Two connecting insides or balconies give two bathrooms and more floor space, but they do not automatically include suite lounges or other suite perks unless the line's category says so (Celebrity documents some Edge suite-plus-non-suite connecting pairs that share Retreat access; that is a line-specific rule, not a fleetwide promise).</li>
+<li><strong>Not advice to book or spend.</strong> We do not publish prices or sailings. This page only explains who the layout suits and what the deck plan symbols mean.</li>
+</ul>
+''',
+      [("Who should book connecting cruise cabins?", "Families and groups who will occupy both rooms and want a private door between them. Light sleepers next to another party should choose a non-connecting cabin."),
+       ("Are connecting cabins noisier?", "The connecting door passes more sound than a solid wall. That helps when both rooms are yours and hurts when strangers are on the other side."),
+       ("How do I find connecting cabins on a deck plan?", "Use the line's deck plan legend for the connecting symbol between two cabin numbers. Adjacent cabins without that symbol do not open into each other."),
+       ("Do connecting cabins change occupancy rules?", "No. Each stateroom keeps its own maximum occupancy, and minors still need an adult on the booking per the line's rules.")],
+      [
+        ("Royal Caribbean: cruise rooms and suites (connecting rooms)", "https://www.royalcaribbean.com/cruise-rooms"),
+        ("Carnival: staterooms (connecting rooms)", "https://www.carnival.com/staterooms"),
+        ("Norwegian Cruise Line: staterooms (Connecting Staterooms)", "https://www.ncl.com/staterooms"),
+        ("Celebrity Cruises: staterooms (connecting options on Edge series)", "https://www.celebritycruises.com/things-to-do-onboard/staterooms"),
+        ("Princess Cruises: staterooms (interconnecting family suites)", "https://www.princess.com/staterooms"),
+        ("Princess Cruises: Star Princess fact sheet (100 connecting staterooms)", "https://www.princess.com/en-uk/news/backgrounders-and-fact-sheets/star-princess-fact-sheet"),
+      ],
+      modified=ADDED3,
+      thumb=("/assets/connecting-cruise-cabins.jpg", "Empty cruise balcony cabin with a connecting door between two rooms", "AI-generated image")
+        if os.path.isfile(os.path.join(ROOT, "assets/connecting-cruise-cabins.jpg")) else None,
+      mid=connect_mid + connect_end,
+      end_related=False)
+
 def home():
     lines = "".join(f'<li class="card"><h3><a href="{u("/lines/" + k + "/")}">{E(L["name"])}</a></h3><p>' + ", ".join(f'<a href="{u(ship_path(s))}">{E(s["name"])}</a>' for s in SHIPS if s["line"] == k) + '</p></li>' for k, L in LINES.items())
     faqs = [
@@ -396,7 +521,7 @@ def home():
 <p class="answer">Deck-by-deck guides to the best cabins and the ones to avoid on {len(SHIPS)} of the biggest cruise ships. We map what is above and below every cabin deck from published deck-by-deck listings, with a link to each line's own deck plan, so you can ask for a quiet cabin before you book.</p>
 <p class="btnrow"><a class="btn" href="{u('/ships/')}">Find your ship</a> <a class="btn alt" href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a></p></section>
 <h2>Ships by cruise line</h2><ul class="cards">{lines}</ul>
-<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li></ul>
+<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li><li><a href="{u('/guides/connecting-cruise-cabins/')}">Connecting cruise cabins</a></li></ul>
 <h2>How it works</h2><p>For every ship we take the deck-by-deck listing of the current deck plan, mark each deck as cabins, public venues or a mix, and flag cabin decks that sit directly under pools and sports areas or over bars and theatres. Then we add ship-specific tips and cite every source. We are independent: no cruise line pays for coverage. <a href="{u('/methodology/')}">Sources and methods</a>.</p>
 {faq_block(faqs)}'''
     write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED2))
@@ -413,18 +538,18 @@ def about_legal():
 <h2>Independence</h2><p>Which Cabin is not affiliated with, endorsed by or sponsored by any cruise line. Ship and line names are used only to identify the ships we describe.</p>
 <p>Spotted something out of date after a refit? <a href="{u('/contact/')}">Tell us</a> and we will re-check it.</p>''', modified=ADDED2)
     simple("/methodology/", f"Sources and Methods | {BRAND}", "Where Which Cabin's deck layouts, ship facts and cabin advice come from, and how the deck noise map is built.", "Sources and methods", f'''
-<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026, most of the rest on 16 Nov 2026, and a further batch on 18 Nov 2026. Each ship page shows its own checked date.</p>
+<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026, most of the rest on 16 Nov 2026, a further batch on 18 Nov 2026, and selected refit re-checks on 19 Nov 2026. Each ship page shows its own checked date.</p>
 <h2>The deck noise map</h2><p>We mark each deck as a cabin deck, a public deck or a mix. A cabin deck is marked quiet (green) when the decks directly above and below are also cabin decks with no listed venues. It is marked amber when it shares space with venues, sits directly below pools, sports, buffet or similar areas, or sits directly above bars, shops, theatres, dining or entertainment. Bridge, medical and crew areas are treated as neutral. This is a deck-level shortcut: a venue may only fill part of a deck, so always look up your exact cabin number on the line's deck plan.</p>
 <h2>Ship facts</h2><p>Class, builder, entry into service, gross tonnage and guest capacity come from each ship's Wikipedia infobox (which cites registers and line fact sheets) or the line's own pages, as credited on each page. If a figure was missing or unclear, we left it out.</p>
 <h2>General advice</h2><p>Motion advice follows the <a href="{CDC[1]}" rel="nofollow noopener">CDC Yellow Book chapter on motion sickness</a>. Other tips (noise from pool decks, elevators, connecting doors, partial-view categories) are our general guidance, not cruise line rules.</p>
 <h2>What we do not do</h2><p>We do not copy deck plan images or cruise line text. Diagrams on this site are our own. We do not publish prices or availability, which change daily.</p>
-<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED2)
+<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED3)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
-<p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
-<h2>Photos</h2><p>The site currently uses no ship photos. We do not use cruise line photos or deck plan images without permission.</p>
-<h2>AI-generated images</h2><p>If we add AI-generated illustrations, each will carry a visible "AI-generated image" credit, will not depict real people, and will never be presented as a photo of a real ship or cabin.</p>
+<p>Last updated 19 Nov 2026.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
+<h2>Photos</h2><p>We do not use cruise line photos or deck plan images without permission. Article thumbnails, when present, are AI-generated news-photo style images hosted on this site.</p>
+<h2>AI-generated images</h2><p>Each AI-generated article image carries a visible "AI-generated image" credit that links here, does not depict real identifiable people, and is never presented as a photograph of a specific real ship or branded cabin.</p>
 <h2>Logos and trademarks</h2><p>We do not display cruise line logos. Names are used only to identify ships.</p>
-<h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy")
+<h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy", modified=ADDED3)
     contact = f'''<p>Questions, corrections after a refit, or a ship you want us to cover next? Send a message and we will reply by email.</p>
 <h2>Corrections</h2><p>Include the page address, what looks wrong and, if you can, a link to the cruise line's deck plan that shows it. We update the "checked" date when we re-verify.</p>
 <p class="form-status" id="contact-status" role="status" hidden></p>
@@ -451,12 +576,13 @@ def about_legal():
 <h2>Indemnity</h2><p>You agree to indemnify Joshua Israel Ventures LLC against claims arising from your misuse of the site or breach of these terms.</p>
 <h2>Governing law</h2><p>These terms are governed by the laws of the State of Florida, United States, without regard to conflict-of-law rules. Any dispute will be resolved in the state or federal courts located in Florida, and you consent to their jurisdiction.</p>
 <h2>Changes</h2><p>We may update these terms. The date above shows the latest version. Questions: use our <a href="{u('/contact/')}">contact form</a>.</p>'''),
-    "/privacy/": ("Privacy Policy", f'''<p>Last updated 16 Nov 2026. This policy explains how Which Cabin (whichcabin.com), a trade name of Joshua Israel Ventures LLC, a Florida limited liability company, handles information.</p>
+    "/privacy/": ("Privacy Policy", f'''<p>Last updated 19 Nov 2026. This policy explains how Which Cabin (whichcabin.com), a trade name of Joshua Israel Ventures LLC, a Florida limited liability company, handles information.</p>
 <h2>Analytics</h2><p>On whichcabin.com we use Cloudflare Web Analytics and, if you accept, Google Analytics 4.</p>
 <p>Cloudflare Web Analytics counts page views. It does not use cookies or local storage and does not track you across sites. It records basic, aggregated information such as the page visited, referrer, browser type and country. The launch site includes this beacon on every page.</p>
-<p>Google Analytics 4 measures how the site is used. It does not load until you press Accept on the cookie banner, and only when a measurement id is set for the launch build. Before that choice we set Google Consent Mode v2 defaults to denied, including analytics storage, ad storage, ad user data and ad personalisation. If you accept, Google Analytics 4 may set cookies to recognise this browser. If you reject, we do not load it. Ad storage stays denied either way, because the site shows no ads. The Cookie settings link in the footer opens the banner again. We remember the choice in local storage on your device, not in a cookie of our own.</p>
+<p>Google Analytics 4 measures how the site is used. It does not load until you press Accept on the cookie banner, and only when a measurement id is set for the launch build. Before that choice we set Google Consent Mode v2 defaults to denied, including analytics storage, ad storage, ad user data and ad personalisation. If you accept, Google Analytics 4 may set cookies to recognise this browser. If you reject, we do not load it. Ad storage stays denied for now because no ad units are displayed. The Cookie settings link in the footer opens the banner again. We remember the choice in local storage on your device, not in a cookie of our own.</p>
 <h2>Contact form</h2><p>If you use the contact form, your name, email address and message are sent through FormSubmit (formsubmit.co), a form-to-email service, so we can reply. We use them only to respond and keep them only as long as needed.</p>
-<h2>Advertising</h2><p>The site shows no ads today. If we add ads in future, for example through Google AdSense, third-party vendors including Google may use cookies to serve ads based on your prior visits to this and other websites. You will be able to opt out of personalised advertising at <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a> and <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>. Where the law requires it (for example in the EEA, the UK and Switzerland), we will ask for consent through a certified consent management platform before any advertising cookies are set. We will update this policy before any ads go live.</p>
+<h2>Advertising</h2><p>Which Cabin is preparing for Google AdSense. Pages include Google's AdSense account meta tag and the AdSense script (publisher id {E(ADSENSE_PUB)}), and we publish an <a href="{u('/ads.txt')}">ads.txt</a> file that authorises Google to sell inventory for this site. No ad units are placed on pages yet, so you will not see ads, and Consent Mode keeps ad storage, ad user data and ad personalisation denied.</p>
+<p>When ad units go live, third-party vendors including Google may use cookies to serve ads based on your prior visits to this and other websites. You will be able to opt out of personalised advertising at <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a> and <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>. Where the law requires it (for example in the EEA, the UK and Switzerland), we will ask for consent through a certified consent management platform before any advertising cookies are set, and we will update this policy and the cookie banner before that change.</p>
 <h2>Cookies</h2><p>Which Cabin does not set its own cookies. Cloudflare Web Analytics does not use cookies. Google Analytics 4 may set cookies only after you accept. You can block or delete cookies in your browser. The site works if you reject analytics. Use Cookie settings in the footer to change your mind, or clear this site's data in your browser to forget the saved choice.</p>
 <h2>Hosting</h2><p>The site is hosted on GitHub Pages, which may log IP addresses for security and operations.</p>
 <h2>Your rights</h2><p>You can ask us to access, correct or delete personal information we hold about you via the <a href="{u('/contact/')}">contact form</a>. Residents of some US states and other countries may have additional rights, which we will honour.</p>
@@ -472,13 +598,14 @@ def about_legal():
 <h2>Reporting infringement</h2><p>If you believe material on this site infringes your copyright, send a notice through our <a href="{u('/contact/')}">contact form</a> with: (1) your name and contact details; (2) a description of the copyrighted work; (3) the URL of the material on our site; (4) a statement that you have a good-faith belief the use is not authorised by the owner, its agent or the law; (5) a statement, under penalty of perjury, that the information is accurate and you are the owner or authorised to act for the owner; and (6) your physical or electronic signature. We will review notices promptly and remove or disable material where appropriate.</p>
 <h2>Counter-notice</h2><p>If material you provided was removed and you believe this was a mistake, you may send a counter-notice through the contact form with the details required by 17 U.S.C. § 512(g).</p>
 <h2>Repeat infringers</h2><p>We will act against repeat infringement where appropriate.</p>'''),
-    "/ad-disclosure/": ("Advertising and Affiliate Disclosure", f'''<p>Last updated {D}. Which Cabin is free to use. At the moment the site shows no ads and contains no affiliate links. In future we may show advertising, for example through Google AdSense, or add affiliate links to booking sites.</p>
-<p>If ads appear they will be clearly separate from our content and labelled. Advertisers will have no influence over our cabin advice. If we add affiliate links, we may earn a commission at no extra cost to you, and we will label those links.</p>
+    "/ad-disclosure/": ("Advertising and Affiliate Disclosure", f'''<p>Last updated 19 Nov 2026. Which Cabin is free to use. The site is registered with Google AdSense (publisher id {E(ADSENSE_PUB)}) and publishes an <a href="{u('/ads.txt')}">ads.txt</a> file, but no ad units are displayed yet and there are no affiliate links.</p>
+<p>When ads appear they will be clearly separate from our content and labelled. Advertisers will have no influence over our cabin advice. If we add affiliate links, we may earn a commission at no extra cost to you, and we will label those links.</p>
 <h2>Editorial independence</h2><p>No cruise line or travel agency pays for coverage or for changes to our advice. Questions: use our <a href="{u('/contact/')}">contact form</a>.</p>'''),
     }
     for p, (t, inner) in legal.items():
         body = f'<article class="prose"><h1>{E(t)}</h1>{inner}<p class="legal-line">{LEGAL_LINE}</p></article>'
-        write(p, page(p, f"{t} | {BRAND}", f"{t} for Which Cabin (whichcabin.com), the independent guide to choosing a cruise cabin.", body, None, [("/", "Home"), (p, t)]))
+        legal_modified = ADDED3 if p in ("/privacy/", "/ad-disclosure/") else TODAY
+        write(p, page(p, f"{t} | {BRAND}", f"{t} for Which Cabin (whichcabin.com), the independent guide to choosing a cruise cabin.", body, None, [("/", "Home"), (p, t)], modified=legal_modified))
 
 def not_found():
     body = f'<h1>Page not found</h1><p>That page has moved or never existed. Try the <a href="{u("/ships/")}">ship guides</a> or <a href="{u("/guides/how-to-choose-a-cruise-cabin/")}">how to choose a cruise cabin</a>.</p>'
@@ -489,11 +616,12 @@ def extras():
     if LAUNCH: open(cn, "w").write("whichcabin.com\n")
     elif os.path.exists(cn): os.remove(cn)
     open(os.path.join(ROOT, f"{INDEXNOW_KEY}.txt"), "w").write(INDEXNOW_KEY)
+    open(os.path.join(ROOT, "ads.txt"), "w").write(f"google.com, pub-{ADSENSE_PUB.split('ca-pub-')[-1]}, DIRECT, f08c47fec0942fa0\n")
     bots = ["*", "Googlebot", "Bingbot", "Mediapartners-Google", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "PerplexityBot", "Perplexity-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "Google-Extended", "Applebot", "Applebot-Extended", "DuckAssistBot", "Amazonbot", "CCBot"]
     open(os.path.join(ROOT, "robots.txt"), "w").write("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + f"Sitemap: {BASE_URL}sitemap.xml\n")
     open(os.path.join(ROOT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{url(p)}</loc><lastmod>{m}</lastmod></url>\n" for p, m in PAGES) + "</urlset>\n")
     ll = [f"# {BRAND}", "", f"> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on {len(SHIPS)} of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked {TODAY_H}.", "", "Independent; not affiliated with any cruise line. Layouts change; confirm on the line's deck plan.", "", "## Guides",
-          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
+          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Connecting cruise cabins]({url('/guides/connecting-cruise-cabins/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
     for s in SHIPS: ll.append(f"- [{s['name']}]({url(ship_path(s))}) ({LINES[s['line']]['short']}): quiet cabin decks {rng(s['_quiet']) or 'none'}; cabin deck under pools {rng(s['_pool']) or 'none'}")
     open(os.path.join(ROOT, "llms.txt"), "w").write("\n".join(ll) + "\n")
     open(os.path.join(ROOT, "favicon.svg"), "w").write(LOGO.replace('width="34" height="34" ', 'xmlns="http://www.w3.org/2000/svg" ').replace(' aria-hidden="true" focusable="false"', ""))
