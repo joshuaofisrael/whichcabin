@@ -178,5 +178,14 @@ llms = os.path.join(ROOT, "llms.txt")
 if not os.path.isfile(llms) or "whichcabin.com" not in open(llms, encoding="utf-8").read():
     print("llms")
     bad[0] += 1
+ads = os.path.join(ROOT, "ads.txt")
+if LAUNCH:
+    if not os.path.isfile(ads) or "pub-5681559774142917" not in open(ads, encoding="utf-8").read():
+        print("ads.txt")
+        bad[0] += 1
+    home = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read()
+    if 'name="google-adsense-account"' not in home or "pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" not in home:
+        print("adsense-head")
+        bad[0] += 1
 print("files", len(files), "issues", bad[0])
 sys.exit(1 if bad[0] else 0)
