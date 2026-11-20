@@ -7,7 +7,7 @@ check.py --launch fails while GA4_ID is empty, or if any page lacks the Cloudfla
 """
 import os, sys, json, html, re
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from ships import SHIPS, LINES
+from ships import SHIPS, LINES, SHIP_EXTRA, SHIP_FAQS
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LAUNCH = "--launch" in sys.argv
 BASE_URL = "https://whichcabin.com/"                 # canonical everywhere, in both modes
@@ -18,6 +18,7 @@ TODAY = "2026-11-15"; TODAY_H = "15 Nov 2026"
 ADDED = "2026-11-16"  # ships added after the 15 Nov 2026 set
 ADDED2 = "2026-11-18"  # second ship batch (Mariner and Adventure of the Seas): bump lastmod only on pages whose listing actually changed
 ADDED3 = "2026-11-19"  # AdSense readiness, Freedom refresh, Mariner/Adventure differentiation
+ADDED4 = "2026-11-20"  # Celebration and Jubilee re-check; Freedom/Mariner split; Virgin and Disney hubs
 ADSENSE_PUB = "ca-pub-5681559774142917"
 MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 def humandate(iso):
@@ -59,8 +60,8 @@ def clip(d, n=155):
 
 def org_ld():
     return {"@type": "Organization", "name": BRAND, "url": BASE_URL, "logo": {"@type": "ImageObject", "url": url("/logo.png")}}
-def article_ld(headline, path, modified):
-    return {"@context": "https://schema.org", "@type": "Article", "headline": headline, "dateModified": modified, "datePublished": modified,
+def article_ld(headline, path, modified, published=None):
+    return {"@context": "https://schema.org", "@type": "Article", "headline": headline, "dateModified": modified, "datePublished": published or modified,
             "author": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "publisher": org_ld(), "mainEntityOfPage": url(path)}
 def faq_ld(faqs):
     return {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
@@ -256,6 +257,7 @@ def deck_chart(A, s):
 def ship_page(s):
     A = analyse(s); L = LINES[s["line"]]; path = ship_path(s)
     chk = s.get("checked", TODAY); chk_h = humandate(chk)
+    published = s.get("published", chk)
     cab = [r for r in A if r["cabin"]]; quiet = [r for r in cab if r["status"] == "quiet"]
     POOLY = re.compile(r"Pool|Lido|Sundeck|Sports|Water|Slide|Speedway|Racetrack|Coaster|Dome|Marketplace|Buffet|FlowRider|Golf|Thrill|Chill|Serenity|Sanctuary|Ropes|Rollglider|Park19|Adventure|Cliffhanger|Spiral|Abyss|Solarium|SeaPlex|NorthStar|RipCord|SkyRide|SkyCourse|SkyZone|Vibe Beach Club", re.I)
     under_pool = [r for r in cab if any(POOLY.search(x) for x in r["above"])]
@@ -301,12 +303,28 @@ def ship_page(s):
     if low: faqs.append((f'Where is the best cabin on {s["name"]} for seasickness?', f'Book a midship cabin on the lowest cabin decks ({decks_word([r["num"] for r in low])}). The CDC advises avoiding the parts of a ship with the most motion, such as the bow, and getting a view of the horizon helps, so an oceanview or balcony cabin low and midship is the ideal combination.'))
     faqs.append((f'How many decks have cabins on {s["name"]}?', f'{len(cab)} decks have passenger cabins: {rng([r["num"] for r in cab])}, based on the deck-by-deck listing of the current deck plan. Check the line\'s official deck plan for the exact cabin numbers on each deck.'))
     faqs.append((f'Is a balcony worth it on {s["name"]}?', 'A balcony helps most on scenic or warm-weather itineraries and for anyone prone to seasickness, because a horizon view reduces symptoms. Check the category name first: inward-facing, promenade-view and partial-view balconies cost less but do not give a clear sea view.'))
+    faqs = list(SHIP_FAQS.get(s["slug"], [])) + faqs
     sis = "".join(f'<li><a href="{u(ship_path(ship_by(x)))}">{E(ship_by(x)["name"])}</a></li>' for x in s["sister"])
     srcs = [(f'{L["name"]}: official {s["name"]} deck plans', s["official"]), (f'CruiseMapper: {s["name"]} deck plans (deck-by-deck listing)', DECKS[s["cm"]]["index"]), fsrc]
     if fsrc is not wiki: srcs.append(wiki)
     srcs.append(CDC)
     sub_bits = [L["name"]] + ([facts["cls"]] if facts.get("cls") else []) + [f"deck plans checked {chk_h}"]
-    engage = s.get("checked") == ADDED3 or s.get("engage")
+    engage = s.get("checked") in (ADDED3, ADDED4) or s.get("engage")
+    extra_pairs = SHIP_EXTRA.get(s["slug"], [])
+    extra_html = "".join(f"<h3>{E(t)}</h3><p>{E(b)}</p>" for t, b in extra_pairs)
+    byline_html = ""
+    if extra_html:
+        prefer = {
+            "freedom-of-the-seas": "mariner-of-the-seas",
+            "mariner-of-the-seas": "freedom-of-the-seas",
+            "carnival-celebration": "carnival-jubilee",
+            "carnival-jubilee": "carnival-celebration",
+        }
+        o = ship_by(prefer.get(s["slug"]) or s["sister"][0])
+        sib = f' Compare the noise map with <a href="{u(ship_path(o))}">{E(o["name"])}</a>.'
+        extra_html = (f'<h2>What is different on {E(s["name"])}</h2>{extra_html}'
+                      f'<p>The dates above were checked {chk_h}.{sib} The deck method is the same one in <a href="{u("/guides/quietest-cruise-cabins/")}">quietest cabin decks</a> and <a href="{u("/guides/cruise-cabins-to-avoid/")}">cabins to avoid</a>, and the order of decisions is in <a href="{u("/guides/how-to-choose-a-cruise-cabin/")}">how to choose a cabin</a>.</p>\n')
+        byline_html = f'<p class="byline">By the Which Cabin editorial team. Sources and the checked date are at the bottom of the page. <a href="{u("/methodology/")}">How we check a ship</a>.</p>\n'
     mid_reads = next_reads(ship_path(s), _ship_read_items(s), "Keep reading") if engage else ""
     end_reads = next_reads(ship_path(s), _ship_read_items(s), "Next reads") if engage else ""
     compare = compare_box(s) if engage else ""
@@ -314,7 +332,7 @@ def ship_page(s):
     body = f'''<article class="prose wide"><h1>Which cabin to book on {E(s["name"])}</h1>
 <p class="sub">{E(" · ".join(sub_bits))}</p>
 <div class="answer"><p><strong>Quick answer</strong></p><ul>{"".join(qa)}</ul></div>
-<p>{E(s["name"])} has {len(cab)} decks with passenger cabins. Below is our deck noise map, which marks every deck by what is on it and what is directly above and below, followed by ship-specific tips and the cabins to think twice about. It is a planning shortcut: the line's own deck plan is always the final word on any cabin number.</p>
+{byline_html}<p>{E(s["name"])} has {len(cab)} decks with passenger cabins. Below is our deck noise map, which marks every deck by what is on it and what is directly above and below, followed by ship-specific tips and the cabins to think twice about. It is a planning shortcut: the line's own deck plan is always the final word on any cabin number.</p>
 {deck_chart(A, s)}
 {compare}
 <h2>Best cabins on {E(s["name"])} by traveller</h2>
@@ -325,7 +343,7 @@ def ship_page(s):
 <li><strong>Views:</strong> an outward-facing balcony on a quiet deck. Avoid any category the line labels as partial or obstructed view.</li>
 <li><strong>Budget:</strong> an interior cabin on a quiet deck gives the best sleep for the money; the deck matters more than the category for noise.</li></ul>
 {mid_reads}
-<h2>{E(s["name"])} tips</h2>{notes}
+{extra_html}<h2>{E(s["name"])} tips</h2>{notes}
 <h2>Cabins to think twice about</h2><ul>{"".join(avoid)}</ul>
 <h2>{E(s["name"])} at a glance</h2><div class="tablewrap"><table class="stats"><tbody>{"".join(fr)}</tbody></table></div>
 <p class="note">Ship facts from {link(fsrc)}. Cabin decks and deck contents from the deck-by-deck listing on CruiseMapper, checked against the {E(L["short"])} deck plan page.</p>
@@ -334,7 +352,7 @@ def ship_page(s):
 <section class="sources" aria-labelledby="src-h"><h2 id="src-h">Sources</h2><ul>{"".join(f"<li>{link(x)}</li>" for x in srcs)}</ul>
 <p class="note">Retrieved {chk_h}. Which Cabin is not affiliated with {E(L["name"])}. Deck layouts and cabin categories can change after refits; always confirm on the line's current deck plan before booking. See <a href="{u('/methodology/')}">how we build these pages</a>.</p></section>
 {end_reads}{related_block}</article>'''
-    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": f'Which cabin to book on {s["name"]}', "dateModified": chk, "datePublished": chk,
+    ld = [{"@context": "https://schema.org", "@type": "Article", "headline": f'Which cabin to book on {s["name"]}', "dateModified": chk, "datePublished": published,
            "author": {"@type": "Organization", "name": BRAND, "url": BASE_URL}, "publisher": {"@type": "Organization", "name": BRAND, "url": BASE_URL, "logo": {"@type": "ImageObject", "url": url("/logo.png")}},
            "mainEntityOfPage": url(path), "about": {"@type": "Thing", "name": s["name"]}},
           {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}]
@@ -353,6 +371,59 @@ def ships_index():
 {faq_block(faqs)}'''
     h1 = "Cruise ship cabin guides"
     write("/ships/", page("/ships/", "Which Ship Cabin Should I Book", f"Which cabin should I book? Open one of {len(SHIPS)} ships for its quiet decks, seasickness cabins and the decks to avoid.", body, [article_ld(h1, "/ships/", ADDED2), faq_ld(faqs)], [("/", "Home"), ("/ships/", "Ships")], modified=ADDED2, og_type="article"))
+
+def _line_compare(k):
+    links = [f'<a href="{u("/lines/" + ok + "/")}">{E(L["short"])}</a>' for ok, L in LINES.items() if ok != k][:4]
+    links.append(f'<a href="{u("/ships/")}">Every ship</a>')
+    return ('<aside class="compare" aria-label="Check another line"><h2>Check another line</h2>'
+            '<p>A quiet deck on one line is not a quiet deck on another. Open a different hub, or start from the full ship list.</p>'
+            f'<p class="compare-links">{" · ".join(links)}</p></aside>')
+
+def _line_reads(ss):
+    items, seen = [], set()
+    for s in ss:
+        cls = s["facts"].get("cls") or s["name"]
+        if cls in seen:
+            continue
+        seen.add(cls)
+        items.append((ship_path(s), f'Which cabin on {s["name"]}', f'{cls}: its own deck noise map, not a copy of the ship beside it.'))
+        if len(items) >= 2:
+            break
+    items += [
+        ("/guides/quietest-cruise-cabins/", "Quietest cabin decks", "Sandwiched cabin decks for every ship, this line included."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Under the pool, over nightlife, and partial views."),
+    ]
+    return items
+
+def _line_bundle(k):
+    """Unique hub copy for lines that were thin templates. Empty for the others."""
+    if k == "virgin":
+        html = f'''<h2>Virgin does not sell a normal inside cabin</h2>
+<p>Virgin Voyages' own cabins page, checked 20 Nov 2026, names four places to sleep, with sizes, and it does not list a standard inside room. Insider cabins are 105 to 177 square feet for 1 to 4 people, and the description does not mention a sea view. Sea View cabins are 130 to 190 square feet for 1 to 3 people, with a porthole or window seat. Sea Terrace cabins are 185 to 225 square feet for 2 to 4 people, and the page says almost all of them have a hammock on the terrace. RockStar Quarters, the suites, run from 352 to 2,147 square feet for 2 to 4 people. Those ranges are the line's, not ours. A Sea Terrace is the room most passengers are choosing between, and it is already a balcony-style cabin, so the deck matters more than the usual inside-versus-balcony argument.</p>
+<h2>One layout across four ships</h2>
+<p>Scarlet Lady, Valiant Lady, Resilient Lady and Brilliant Lady are the four Virgin ships on this site. The ship pages list the same builder, Fincantieri, the same 110,000 gross tons and the same 2,770 guests, with service dates of February 2020, March 2022, May 2023 and September 2025. Virgin's <a href="{u("/ships/scarlet-lady/")}">Scarlet Lady</a> page on the line's site, checked 20 Nov 2026, calls that ship the first and mentions a revamp. It does not date the work, so this hub does not pretend the four deck plans have diverged.</p>
+<p>The deck-by-deck labels behind our ship pages, checked 16 Nov 2026, put cabins with the spa and a dining room on deck 5. Decks 6 and 7 are the lounge, casino, shops and lobby, with no cabins. Decks 8 to 14 are cabin decks, and the bridge is on deck 14. Deck 15 mixes suites with the lido pools. Decks 16 and 17 are sports, sun and a jogging track. For a light sleeper who is not in a suite, the middle of that cabin run (decks 9 to 13) has cabins above and below. Deck 8 is the first cabin deck over the public rooms. Deck 14 sits under the pool deck. Open <a href="{u("/ships/scarlet-lady/")}">Scarlet Lady</a> for the map, then <a href="{u("/ships/brilliant-lady/")}">Brilliant Lady</a> if you want the newest hull with the same pattern. The <a href="{u("/guides/quietest-cruise-cabins/")}">quietest-decks table</a> lists the sandwiched decks for each.</p>'''
+        faqs = [
+            ("Does Virgin Voyages have inside cabins?",
+             "Virgin's cabins page, checked 20 Nov 2026, lists Insider, Sea View, Sea Terrace and RockStar Quarters. Insider is the category with no sea view in the description, at 105 to 177 square feet. It is not labelled as a windowless inside room of the sort Carnival or Royal Caribbean sell."),
+            ("Do Scarlet Lady and Brilliant Lady use the same cabin decks?",
+             "On the deck listings checked 16 Nov 2026, yes. Both put public rooms on decks 6 and 7, cabin decks on 8 to 14, and suites with the pools on deck 15. Service dates differ. The deck pattern on our pages does not."),
+        ]
+        return html, faqs
+    if k == "disney":
+        html = f'''<h2>Three Disney classes, three different quiet decks</h2>
+<p>The seven Disney ships here are not one layout with the name swapped. Wish, Treasure and Destiny are Wish class. Dream and Fantasy are Dream class. Magic and Wonder are the smaller Magic class. The deck notes on each ship page come from that ship's deck-by-deck listing. This hub only lines the three patterns up so a Wish-class answer is not copied onto Magic.</p>
+<p>On the Wish-class notes, decks 7, 8 and 9 are the quiet core, with cabin decks above and below. Deck 2 shares the deck with the kids' clubs and sits under dining on deck 3. Concierge rooms are on decks 10 to 13, near the pools, which is convenient and busier. Start with <a href="{u("/ships/disney-wish/")}">Disney Wish</a> if that is the ship, and do not assume <a href="{u("/ships/disney-treasure/")}">Disney Treasure</a> has invented a new deck order. The Wish-class notes are shared because the listings match, and each page still has its own facts table.</p>
+<p>Dream class is a different stack. Deck 2 mixes cabins with Enchanted Garden and sits under the lobby, shops and dining on deck 3. Deck 5 mixes cabins with the kids' and teen clubs. Decks 6 to 10 are cabin decks, with the bridge on deck 10, under the lido, pools and spa on deck 11. <a href="{u("/ships/disney-dream/")}">Disney Dream</a> is the page to open. Fantasy uses the same Dream-class notes.</p>
+<p>Magic class is smaller again. Wikipedia figures already on the ship pages give Magic 83,338 gross tons and 1,750 guests at double occupancy, and Wonder 84,130 gross tons. Deck 5 mixes cabins with the kids' club and sits above the promenade and shops on deck 4. Deck 9 is the lido, pools and spa, so deck 8 is the cabin deck directly underneath, and deck 10 is the adults' area, sports and a waterslide. Read <a href="{u("/ships/disney-magic/")}">Disney Magic</a> before you treat a Wish-class "deck 8" tip as if it meant the same thing here. The <a href="{u("/guides/cruise-cabins-to-avoid/")}">cabins to avoid</a> guide is the general version of that overhead-noise point.</p>'''
+        faqs = [
+            ("Is deck 8 a quiet cabin deck on every Disney ship?",
+             "No. On the Wish-class ships in this guide, decks 7 to 9 are the sandwiched cabin decks. On Magic and Wonder, deck 8 sits directly under the lido on deck 9. The deck number is not the advice. The neighbour above it is."),
+            ("Which Disney ships share a layout?",
+             "Wish, Treasure and Destiny share the Wish-class notes. Dream and Fantasy share the Dream-class notes. Magic and Wonder share the Magic-class notes. Open the ship, not the line, before you pick a deck."),
+        ]
+        return html, faqs
+    return "", []
 
 def line_pages():
     cards = []
@@ -373,12 +444,23 @@ def line_pages():
             (f'Do these {L["short"]} ships share cabin decks?', "Ships of the same class share a layout, so the same decks tend to be quiet or noisy on sister ships. Open a ship for its deck noise map."),
         ]
         h1 = f'{L["name"]}: which cabin to book'
-        body = f'''<h1>{E(h1)}</h1><p class="answer">Cabin guides for {len(ss)} {E(L["short"])} ships{E(klass)}. Ships of the same class share a layout, so the same decks tend to be quiet or noisy across sister ships.</p>
-<ul class="cards">{items}</ul><p class="note">Official fleet pages: {link((L["name"] + " ships", L["url"]))}. Which Cabin is independent and not affiliated with {E(L["name"])}.</p>
-{faq_block(faqs)}{related(p)}'''
+        line_extra, line_faqs = _line_bundle(k)
+        if line_faqs:
+            faqs = line_faqs + faqs
+        byline = compare = mid_reads = end_reads = ""
+        if line_extra:
+            byline = f'<p class="byline">By the Which Cabin editorial team. <a href="{u("/methodology/")}">How we check a ship</a>.</p>'
+            line_extra = line_extra + "\n"
+            compare = _line_compare(k) + "\n"
+            mid_reads = next_reads(p, _line_reads(ss), "Keep reading")
+            end_reads = next_reads(p, _line_reads(ss), "Next reads")
+        body = f'''<h1>{E(h1)}</h1>{byline}<p class="answer">Cabin guides for {len(ss)} {E(L["short"])} ships{E(klass)}. Ships of the same class share a layout, so the same decks tend to be quiet or noisy across sister ships.</p>
+{line_extra}{compare}<ul class="cards">{items}</ul>{mid_reads}<p class="note">Official fleet pages: {link((L["name"] + " ships", L["url"]))}. Which Cabin is independent and not affiliated with {E(L["name"])}.</p>
+{faq_block(faqs)}{end_reads}{related(p) if not line_extra else ""}'''
         desc = f'Which {L["short"]} cabin should I book? Quiet decks, seasickness picks and cabins to avoid on {len(ss)} ships, including {ss[0]["name"]}.'
-        line_modified = ADDED2 if k == "royal-caribbean" else ADDED
-        write(p, page(p, f'Which {L["short"]} Cabin Should I Book', desc, body, [article_ld(h1, p, line_modified), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])], modified=line_modified, og_type="article"))
+        line_modified = ADDED4 if line_extra else (ADDED2 if k == "royal-caribbean" else ADDED)
+        published = ADDED if line_extra else None
+        write(p, page(p, f'Which {L["short"]} Cabin Should I Book', desc, body, [article_ld(h1, p, line_modified, published), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])], modified=line_modified, og_type="article"))
         cards.append(f'<li class="card"><h2><a href="{u(p)}">{E(L["name"])}</a></h2><p>{", ".join(E(s["name"]) for s in ss)}</p></li>')
     faqs = [
         ("Which cruise line cabin should I book?", "Pick the line, then the ship. Each line page lists the quiet cabin decks and the deck under the pool for every ship we cover."),
@@ -479,12 +561,12 @@ def about_legal():
 <h2>Independence</h2><p>Which Cabin is not affiliated with, endorsed by or sponsored by any cruise line. Ship and line names are used only to identify the ships we describe.</p>
 <p>Spotted something out of date after a refit? <a href="{u('/contact/')}">Tell us</a> and we will re-check it.</p>''', modified=ADDED2)
     simple("/methodology/", f"Sources and Methods | {BRAND}", "Where Which Cabin's deck layouts, ship facts and cabin advice come from, and how the deck noise map is built.", "Sources and methods", f'''
-<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026, most of the rest on 16 Nov 2026, a further batch on 18 Nov 2026, and selected refit re-checks on 19 Nov 2026. Each ship page shows its own checked date.</p>
+<h2>Deck layouts</h2><p>For each ship we use the deck-by-deck listing on <a href="https://www.cruisemapper.com/deckplans" rel="nofollow noopener">CruiseMapper</a>, which summarises what is on every deck of the line's current deck plan, and we link the cruise line's own deck plan page on every ship page. The first 25 ships were checked on 15 Nov 2026, most of the rest on 16 Nov 2026, a further batch on 18 Nov 2026, and selected refit re-checks on 19 Nov 2026. On 20 Nov 2026 we re-checked Carnival Celebration, Carnival Jubilee, Freedom of the Seas and Mariner of the Seas against the line's pages, Wikipedia's infoboxes and the CruiseMapper deck index. Each ship page shows its own checked date.</p>
 <h2>The deck noise map</h2><p>We mark each deck as a cabin deck, a public deck or a mix. A cabin deck is marked quiet (green) when the decks directly above and below are also cabin decks with no listed venues. It is marked amber when it shares space with venues, sits directly below pools, sports, buffet or similar areas, or sits directly above bars, shops, theatres, dining or entertainment. Bridge, medical and crew areas are treated as neutral. This is a deck-level shortcut: a venue may only fill part of a deck, so always look up your exact cabin number on the line's deck plan.</p>
 <h2>Ship facts</h2><p>Class, builder, entry into service, gross tonnage and guest capacity come from each ship's Wikipedia infobox (which cites registers and line fact sheets) or the line's own pages, as credited on each page. If a figure was missing or unclear, we left it out.</p>
 <h2>General advice</h2><p>Motion advice follows the <a href="{CDC[1]}" rel="nofollow noopener">CDC Yellow Book chapter on motion sickness</a>. Other tips (noise from pool decks, elevators, connecting doors, partial-view categories) are our general guidance, not cruise line rules.</p>
 <h2>What we do not do</h2><p>We do not copy deck plan images or cruise line text. Diagrams on this site are our own. We do not publish prices or availability, which change daily.</p>
-<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED3)
+<h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED4)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
 <p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
 <h2>Photos</h2><p>The site currently uses no ship photos. We do not use cruise line photos or deck plan images without permission.</p>

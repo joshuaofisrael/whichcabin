@@ -191,6 +191,70 @@ SIGNATURE = [
  ("Kids on deck 10, Crow's Nest on deck 11", "Deck 10 mixes cabins with the kids' and teen areas. Deck 11 mixes cabins with the observation area, sports and the Crow's Nest."),
 ]
 
+# Ship-only notes added 20 Nov 2026. Facts are from the source named in the sentence.
+# Rendered above the shared class notes so sister ships do not read as copies.
+SHIP_EXTRA = {
+ "freedom-of-the-seas": [
+  ("A larger ship than Mariner, not a copy of it",
+   "Freedom of the Seas is Freedom class, not Voyager class. Wikipedia's infobox, checked 20 Nov 2026, lists a length of 338.774 metres, gross tonnage of 156,271 since 2015 (154,407 from 2006 to 2015), and 3,782 guests at double occupancy, with a maximum of 4,515. Mariner of the Seas, on the same check, is listed at 311.12 metres and 139,863 gross tons, with capacity shown as 3,114 passengers and not labelled double occupancy. The waterline beam is about 38.6 metres on both infoboxes. Freedom's extreme beam, including the bridge wings, is listed at 56.08 metres, against Mariner's maximum beam of 48.0 metres. The quiet-deck shortcut can look similar. The ships are not the same size."),
+  ("Deck labels re-checked 20 Nov 2026",
+   "CruiseMapper's Freedom of the Seas deck-plan index, opened 20 Nov 2026, still labels deck 4 as casino, lounge and dining, with no cabins. Liberty of the Seas puts cabins on that deck. Freedom's deck 5 label is promenade, lobby, shops and the helideck, with no dining room in the label. Mariner's deck 5 label on the same day includes a third dining room. Freedom's deck 15 label is still Royal Escape Room, and that deck has no cabins. The cabin-deck map on this page did not need a redraw."),
+  ("What the 2020 refit changed, and what January 2025 did not",
+   "CruiseMapper's Amplified notes, still on that page, record the conversions already easy to miss on a class diagram: the deck 2 conference center became 25 inside cabins, the deck 3 On Air Club became 12 inside cabins, the deck 6 loyalty desk became 4 inside cabins, and an aft suite on deck 6 was replaced with 4 balcony cabins. The new deck 2 rooms share a deck with the ice rink. The new deck 3 rooms share a deck with Studio B and a dining room. CruiseMapper's overview also dates a later refurbishment to January 2025. It does not show a new cabin deck in the 20 Nov 2026 labels, so this page keeps the same noise map and records the date."),
+ ],
+ "mariner-of-the-seas": [
+  ("Shorter, earlier, and a different class",
+   "Mariner of the Seas entered service on 16 November 2003, built at Kvaerner Masa-Yards in Turku. Wikipedia's infobox, checked 20 Nov 2026, lists 139,863 gross tons, a length of 311.12 metres and a maximum beam of 48.0 metres, and it shows capacity as 3,114 passengers without calling that figure double occupancy. Freedom of the Seas, checked the same day, is a later Freedom-class ship: 338.774 metres, 156,271 gross tons since 2015, and 3,782 guests at double occupancy. Treat the shared 'ice rink below, pools above' pattern as a family resemblance, then use the numbers and the deck labels below."),
+  ("The 2018 drydock moved cabins, not just slides",
+   "CruiseMapper's refurbishment review dates Mariner's Royal Amplified drydock to 8 May through 24 June 2018 in Freeport. On deck 3, The Golden Room and Dragon's Lair, both nightclubs, were converted into staterooms. Deck 4, which has no cabins in the current label, became Izumi and Playmakers. Deck 12 aft gained the Slashaway Bay children's aqua park in place of the outdoor youth area. Deck 15 lost the Skylight Chapel and gained The Observatorium escape room. Deck 13 gained the Cyclone and Typhoon slides and a FlowRider. The new deck 3 cabins are the detail that changes a booking: they sit on a deck that still lists Studio B and a dining room, not in the quiet run of decks 6 to 10."),
+  ("A March 2026 refit, with the same cabin decks",
+   "CruiseMapper's Mariner overview, checked 20 Nov 2026, dates a later refurbishment to March 2026. The deck labels that day still match this page: deck 2 cabins with the ice rink, deck 4 casino, lounge and dining with no cabins, deck 5 promenade plus a dining room Freedom's label does not list, and deck 15 an escape room with no cabins. Until Royal Caribbean's own plan shows a cabin deck added or removed, the noise map stands, with the March 2026 date noted beside it."),
+ ],
+ "carnival-celebration": [
+  ("In service November 2022, and not the same ship as Jubilee",
+   "Wikipedia's infobox for Carnival Celebration, checked 20 Nov 2026, lists completion on 2 November 2022, a maiden voyage on 6 November 2022, builder Meyer Turku, 183,521 gross tons, and 5,374 guests at double occupancy (6,500 maximum). Carnival Jubilee's infobox on the same check lists completion on 4 December 2023, builder Meyer Werft in Papenburg, the same 183,521 gross tons, and 5,228 guests at double occupancy (6,631 maximum). Same class tonnage. Different year, different yard, different double-occupancy count."),
+  ("The Gateway sits under the first busy cabin deck",
+   "Carnival's Celebration ship page, checked 20 Nov 2026, describes six zones and names The Gateway as one of them. It does not number the decks. CruiseMapper's deck index the same day does: deck 6 is lobby, shops, lounge and Gateway, and deck 7 is casino, shops and Gateway, with no cabins on either. Deck 8 is cabins, the promenade and Havana. Jubilee's index uses Currents on decks 6 and 7, and it adds The Shores to the deck 8 label beside Havana. On Celebration, a deck 8 cabin is the room directly above the Gateway casino level and beside Havana, not beside a zone called The Shores."),
+  ("Suite access and the Family Harbor lounge",
+   "Carnival's page says a Carnival Excel suite includes access to Loft 19, the retreat with an infinity whirlpool on the top of the ship. CruiseMapper still labels deck 19 as Loft 19 and the BOLT coaster, with no cabins, so deck 17 remains the cabin deck nearest that activity. The same Carnival page places Family Harbor staterooms near the Family Harbor Lounge. CruiseMapper still puts Family Harbor on deck 4 with cabins and the kids' area. CruiseMapper also counts 2,641 staterooms on Celebration, against 2,626 on Jubilee. Those are room counts, not the double-occupancy figures above."),
+ ],
+ "carnival-jubilee": [
+  ("Third Excel ship, different yard, fewer double-occupancy berths",
+   "Wikipedia's infobox for Carnival Jubilee, checked 20 Nov 2026, lists completion on 4 December 2023, a maiden voyage on 23 December 2023, builder Meyer Werft in Papenburg, 183,521 gross tons, and 5,228 guests at double occupancy (6,631 maximum). Celebration, checked the same day, is Meyer Turku, in service from November 2022, with 5,374 guests at double occupancy. The gross tonnage matches. The yard, the year and the double-occupancy count do not. Carnival's Jubilee page calls this the ship that follows Mardi Gras and Celebration."),
+  ("Currents and The Shores are the zones Celebration's labels do not use",
+   "Carnival's Jubilee page, checked 20 Nov 2026, says two of the six zones, Currents and The Shores, are the new ones. It describes Grand Central, the atrium, and names Emeril's Bistro 717. It does not assign deck numbers. CruiseMapper's index that day labels deck 6 as lobby, shops, lounge and Currents, and deck 7 as casino, shops and Currents, with no cabins. Deck 8 is cabins, the promenade, Havana and The Shores. Celebration's deck 8 label stops at Havana. A Jubilee cabin on deck 8 shares the deck with Havana and The Shores and sits above the Currents casino level."),
+  ("Same skeleton, a smaller stateroom count",
+   "CruiseMapper's Jubilee index, checked 20 Nov 2026, counts 2,626 staterooms, against 2,641 on Celebration. Family Harbor is still on deck 4 with cabins and the kids' area, which matches Carnival's line that Family Harbor staterooms sit near that lounge. Deck 19 is still Loft 19 and BOLT, with no cabins, so deck 17 is still the cabin deck under the coaster and the adult Serenity area on deck 18. Use Jubilee's own labels for the neighbourhood names. Do not copy them across from Celebration."),
+ ],
+}
+
+SHIP_FAQS = {
+ "freedom-of-the-seas": [
+  ("Is Freedom of the Seas the same layout as Mariner of the Seas?",
+   "No. Freedom is Freedom class and longer: Wikipedia lists 338.774 metres and 156,271 gross tons, against Mariner's 311.12 metres and 139,863 gross tons. CruiseMapper's labels on 20 Nov 2026 also differ on deck 5 (no dining room in Freedom's label) and on deck 4 (no cabins on Freedom; Liberty, not Mariner, is the sister with cabins there)."),
+  ("Did Freedom of the Seas change cabins after the 2020 refit?",
+   "CruiseMapper's Amplified notes say yes: inside cabins replaced the deck 2 conference center, the deck 3 On Air Club and the deck 6 loyalty desk, and an aft suite on deck 6 became balcony cabins. A later refurbishment is dated January 2025 on the same site. The 20 Nov 2026 deck labels do not add a new cabin deck."),
+ ],
+ "mariner-of-the-seas": [
+  ("Did Mariner of the Seas add cabins in the 2018 refit?",
+   "CruiseMapper's 2018 drydock review says The Golden Room and Dragon's Lair on deck 3 were converted into staterooms. Those cabins share deck 3 with Studio B and a dining room. Deck 4 did not gain cabins. It is where Izumi and Playmakers went."),
+  ("Was Mariner of the Seas refurbished in 2026?",
+   "CruiseMapper's ship overview, checked 20 Nov 2026, dates the latest refurbishment to March 2026. The deck labels that day still match the noise map on this page, including the escape room on deck 15 and cabins beside the ice rink on deck 2."),
+ ],
+ "carnival-celebration": [
+  ("How is Carnival Celebration different from Carnival Jubilee?",
+   "Both are Excellence class at 183,521 gross tons. Wikipedia, checked 20 Nov 2026, lists Celebration as Meyer Turku, in service November 2022, with 5,374 guests at double occupancy, and Jubilee as Meyer Werft, completed December 2023, with 5,228 at double occupancy. CruiseMapper labels Celebration's midship zones Gateway, and Jubilee's Currents, and only Jubilee's deck 8 label includes The Shores."),
+  ("Which deck is above The Gateway on Carnival Celebration?",
+   "CruiseMapper's index, checked 20 Nov 2026, puts Gateway on decks 6 and 7, which have no cabins, and puts cabins on deck 8 with the promenade and Havana. Deck 8 is the cabin deck directly above that casino level."),
+ ],
+ "carnival-jubilee": [
+  ("Which Jubilee zones are not on Celebration's deck labels?",
+   "Carnival's Jubilee page names Currents and The Shores as the new zones. CruiseMapper's index, checked 20 Nov 2026, puts Currents on decks 6 and 7 and adds The Shores to deck 8 beside Havana. Celebration's matching labels say Gateway, and deck 8 stops at Havana."),
+  ("When did Carnival Jubilee enter service?",
+   "Wikipedia's infobox, checked 20 Nov 2026, lists completion on 4 December 2023 and a maiden voyage on 23 December 2023. Builder is Meyer Werft in Papenburg. Gross tonnage is 183,521, the same figure listed for Celebration."),
+ ],
+}
+
 SHIPS = [
  dict(slug="icon-of-the-seas", name="Icon of the Seas", line="royal-caribbean", cm="Icon-Of-The-Seas-2110", official=RCL.format("icon-of-the-seas"), wiki="Icon_of_the_Seas",
       facts=dict(cls="Icon class", builder="Meyer Turku", service="January 2024", gt="248,663", guests="5,610 (double occupancy)"), notes=ICON, sister=["star-of-the-seas"]),
@@ -229,7 +293,7 @@ SHIPS = [
         ("2020 Royal Amplified added cabins on decks 2, 3 and 6", "CruiseMapper's Freedom of the Seas deck plan notes (refit completed March 2020) record that the Deck 2 conference center became 25 inside cabins, the Deck 3 On Air Club became 12 inside cabins, and the Deck 6 loyalty desk became 4 inside cabins. Those new insides sit on decks that already mix cabins with the ice rink (deck 2) or Studio B and dining (deck 3), so treat them like any other cabin beside late venues: check the exact cabin number on the line's deck plan."),
         ("Sports deck thrills sit above deck 12", "The same 2020 drydock added the Cyclone and Typhoon waterslides on deck 13 beside the FlowRider. Deck 12 remains the cabin deck under that sports deck, so morning and afternoon activity overhead is the main cabin trade-off after the Amplified refit."),
       ],
-      sister=["liberty-of-the-seas", "independence-of-the-seas"], checked="2026-11-19"),
+      sister=["liberty-of-the-seas", "independence-of-the-seas"], checked="2026-11-20", published="2026-11-19"),
  dict(slug="liberty-of-the-seas", name="Liberty of the Seas", line="royal-caribbean", cm="Liberty-Of-The-Seas-731", official=RCL.format("liberty-of-the-seas"), wiki="Liberty_of_the_Seas",
       facts=dict(cls="Freedom class", builder="Aker Yards, Turku", service="May 2007", gt="155,889", guests="3,798 (double occupancy)"),
       notes=FREEDOM + [("Cabins beside the casino", "Liberty's deck 4 lists cabins with the casino and lounge. Freedom of the Seas and Independence of the Seas keep deck 4 as public rooms.")],
@@ -247,7 +311,7 @@ SHIPS = [
         ("Dining shares the low decks", "CruiseMapper's Mariner deck listing puts dining rooms on decks 3, 4 and 5 with Studio B, the casino/lounge and the promenade. Adventure of the Seas keeps dining off those mid-public decks in its listing, so Mariner's cabin neighbours on decks 2 and 3 sit closer to mealtime traffic."),
         ("Entered service later than Adventure", "Mariner entered service in November 2003 (Wikipedia infobox, checked 19 Nov 2026), two years after Adventure of the Seas. Gross tonnage is listed as 139,863, a touch larger than Adventure's 138,193."),
       ],
-      sister=["navigator-of-the-seas", "voyager-of-the-seas", "adventure-of-the-seas"], checked="2026-11-19"),
+      sister=["navigator-of-the-seas", "voyager-of-the-seas", "adventure-of-the-seas"], checked="2026-11-20", published="2026-11-19"),
  dict(slug="adventure-of-the-seas", name="Adventure of the Seas", line="royal-caribbean", cm="Adventure-Of-The-Seas-533", official=RCL.format("adventure-of-the-seas"), wiki="Adventure_of_the_Seas",
       facts=dict(cls="Voyager class", builder="Kvaerner Masa-Yards, Turku", service="November 2001", gt="138,193", guests="3,807 (max)"),
       notes=VOYAGER + [
@@ -257,11 +321,23 @@ SHIPS = [
       ],
       sister=["navigator-of-the-seas", "voyager-of-the-seas", "mariner-of-the-seas"], checked="2026-11-19"),
  dict(slug="carnival-celebration", name="Carnival Celebration", line="carnival", cm="Carnival-Celebration-2106", official=CCL.format("carnival-celebration"), wiki="Carnival_Celebration",
-      facts=dict(cls="Excellence class", builder="Meyer Turku", gt="183,521", guests="5,374 (double occupancy)"), notes=EXCELLENCE, sister=["mardi-gras", "carnival-jubilee"]),
+      facts=dict(cls="Excellence class", builder="Meyer Turku", service="November 2022", gt="183,521", guests="5,374 (double occupancy)"),
+      notes=[
+        ("Deck 8 cabins sit on top of The Gateway", "Carnival's own Celebration page describes The Gateway as a zone and does not give it a deck number. CruiseMapper's index, checked 20 Nov 2026, puts Gateway on decks 6 and 7, which have no cabins, and puts cabins on deck 8 with the promenade and Havana. Live Latin music at the Havana Bar is the evening noise CruiseMapper flags on that deck. Deck 9 sits directly over that mix, so it is not a fully enclosed cabin deck."),
+        ("Family Harbor is a deck 4 choice, not a quiet one", "Carnival's page puts Family Harbor staterooms next to the Family Harbor Lounge, with breakfast, snacks, games and a block of Night Owls babysitting. CruiseMapper still lists that lounge on deck 4 beside cabins and the kids' area. Take it for the lounge. Do not take it for silence."),
+        ("Loft 19 access is a suite perk, and the coaster is above deck 17", "Carnival's page says a Carnival Excel suite includes Loft 19, the top-deck retreat with an infinity whirlpool. CruiseMapper labels deck 19 as Loft 19 and the BOLT coaster, with no cabins. Deck 17 cabins are the ones under the teen and sundeck level, closest to that machinery."),
+      ],
+      sister=["mardi-gras", "carnival-jubilee"], checked="2026-11-20", published="2026-11-15"),
  dict(slug="mardi-gras", name="Mardi Gras", line="carnival", cm="Carnival-Mardi-Gras-2105", official=CCL.format("mardi-gras"), wiki="Mardi_Gras_(2020_ship)",
       facts=dict(cls="Excellence class", builder="Meyer Turku", service="July 2021", gt="181,808", guests="5,282 (double occupancy)"), notes=EXCELLENCE, sister=["carnival-celebration", "carnival-jubilee"]),
  dict(slug="carnival-jubilee", name="Carnival Jubilee", line="carnival", cm="Carnival-Jubilee-2077", official=CCL.format("carnival-jubilee"), wiki="Carnival_Jubilee",
-      facts=dict(cls="Excellence class", builder="Meyer Werft", service="December 2023", gt="183,521"), notes=EXCELLENCE, sister=["carnival-celebration", "mardi-gras"]),
+      facts=dict(cls="Excellence class", builder="Meyer Werft", service="December 2023", gt="183,521", guests="5,228 (double occupancy)"),
+      notes=[
+        ("Deck 8 is shared with Havana and The Shores", "Jubilee's deck index on CruiseMapper, checked 20 Nov 2026, is the one that adds The Shores to deck 8. Cabins, the promenade and Havana are on that same deck, directly over Currents on deck 7 (casino and shops, no cabins). Celebration's matching label stops at Havana and calls the public decks Gateway. If the neighbourhood name on your booking does not say The Shores, you are not looking at Jubilee's deck 8."),
+        ("The Family Harbor lounge is still on deck 4", "Carnival's Jubilee page seats Family Harbor staterooms by that lounge. The deck index puts the lounge on deck 4 with cabins and the kids' area. It is the family location on this ship, and it is the lowest cabin deck on the listing, so the forward-cabin caution on this page still applies."),
+        ("BOLT and Serenity are above the top cabin deck", "Deck 18 on the Jubilee index is Serenity, sports and WaterWorks. Deck 19 is Loft 19 and the BOLT coaster. Neither has cabins. Deck 17, which does, also lists teens and the sundeck, so it takes traffic from both. Decks 10, 11, 12 and 14 are the cabin decks with cabin decks above and below. Deck 15 is the one directly under the lido."),
+      ],
+      sister=["carnival-celebration", "mardi-gras"], checked="2026-11-20", published="2026-11-15"),
  dict(slug="carnival-vista", name="Carnival Vista", line="carnival", cm="Carnival-Vista-1039", official=CCL.format("carnival-vista"), wiki="Carnival_Vista",
       facts=dict(cls="Vista class", builder="Fincantieri", service="May 2016", gt="133,596", guests="3,934 (double occupancy)"),
       notes=VISTA + [("IMAX on deck 7", "Deck 7 mixes cabins with the IMAX theater.")],
