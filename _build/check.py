@@ -8,6 +8,24 @@ Also checks titles under 60 characters, unique titles and descriptions, canonica
 Open Graph, JSON-LD, footer policy links, sitemap lastmod, robots, llms.txt and the IndexNow key.
 """
 import glob, re, json, os, sys, html
+
+# Paths in _build/thin-noindex.txt are intentionally noindex (AdSense low-value-content fix, 20 Nov 2026).
+import os as _os
+_THIN = set()
+try:
+    with open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "thin-noindex.txt"), encoding="utf-8") as _fh:
+        _THIN = {l.strip().strip("/") for l in _fh if l.strip() and not l.startswith("#")}
+except FileNotFoundError:
+    pass
+
+
+def _thin_rel(rel):
+    r = str(rel).replace("\\", "/")
+    if r.endswith("index.html"):
+        r = r[: -len("index.html")]
+    return r.strip("/") in _THIN
+
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LAUNCH = "--launch" in sys.argv
 PREFIX = "" if LAUNCH else "/whichcabin"
@@ -87,7 +105,7 @@ for f in files:
         if "gtag('consent','default'" not in h or "analytics_storage':'denied'" not in h:
             print("noconsent", rel)
             bad[0] += 1
-        if "noindex" in h and rel != "404.html":
+        if "noindex" in h and rel != "404.html" and not _thin_rel(rel):
             print("noindex", rel)
             bad[0] += 1
         if 'href="/whichcabin' in h or 'src="/whichcabin' in h:
