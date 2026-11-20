@@ -470,9 +470,20 @@ def line_pages():
     body = f'<h1>{h1}</h1><p class="answer">Choose a cruise line to see every ship we cover, with its quiet decks and the decks under the pool.</p><ul class="cards">{"".join(cards)}</ul>{faq_block(faqs)}{related("/lines/")}'
     write("/lines/", page("/lines/", "Which Cruise Line Cabin to Book", f"Which cruise line cabin should I book? Quiet decks and the deck under the pool on {len(LINES)} lines.", body, [article_ld(h1, "/lines/", ADDED2), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines")], modified=ADDED2, og_type="article"))
 
-def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED):
-    body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{related(path)}</article>'
-    write(path, page(path, title, desc, body, [article_ld(h1, path, modified), faq_ld(faqs)], [("/", "Home"), (path, h1)], modified=modified, og_type="article"))
+def hero_figure(filename, alt):
+    """News-photo thumbnail. Omitted until the file is in assets/. Caption links to the image policy."""
+    rel = f"assets/{filename}"
+    if not os.path.isfile(os.path.join(ROOT, rel)):
+        return ""
+    src = u("/" + rel)
+    return (f'<figure class="hero"><a href="{u("/image-policy/")}"><img src="{src}" alt="{E(alt)}" width="1200" height="675"></a>'
+            f'<figcaption>AI-generated image. <a href="{u("/image-policy/")}">Image policy</a>.</figcaption></figure>')
+
+def guide(path, title, h1, desc, inner, faqs, srcs, modified=ADDED, published=None, end_reads=None):
+    end = next_reads(path, end_reads, "Next reads") if end_reads else ""
+    tail = end if end_reads else related(path)
+    body = f'<article class="prose"><h1>{E(h1)}</h1>{inner}{faq_block(faqs)}<section class="sources"><h2>Sources</h2><ul>' + "".join(f"<li>{link(x)}</li>" for x in srcs) + f'</ul><p class="note">Retrieved {humandate(modified)}.</p></section>{tail}</article>'
+    write(path, page(path, title, desc, body, [article_ld(h1, path, modified, published), faq_ld(faqs)], [("/", "Home"), (path, h1)], modified=modified, og_type="article"))
 
 def guides():
     ex = ship_by("symphony-of-the-seas")
@@ -483,14 +494,14 @@ def guides():
 <h2>2. Choose the spot on the deck</h2><ul><li><strong>Midship</strong> moves least in a swell and is close to the main elevators.</li><li><strong>Forward</strong> cabins feel the most pitching; the CDC advises avoiding the bow if you are prone to motion sickness. The lowest forward cabins are also close to the bow thrusters and anchor gear.</li><li><strong>Aft</strong> cabins can have wide wake views from corner balconies, and are often quiet at night, but some ships have more vibration at the stern.</li><li>Avoid cabins beside elevator lobbies, stair landings, laundry rooms and service doors (unlabelled blocks on the deck plan) if you are a light sleeper.</li></ul>
 <h2>3. Choose the room type</h2><ul><li><strong>Interior:</strong> cheapest and darkest, good for sleep. Some ships sell virtual-window or promenade-view interiors.</li><li><strong>Oceanview:</strong> a window, which helps with seasickness because you can see the horizon.</li><li><strong>Balcony:</strong> private outdoor space. Read the category: inward-facing, promenade-view and partial-view balconies cost less but give a different view.</li><li><strong>Suites and ship-within-a-ship areas</strong> (The Haven, MSC Yacht Club, The Retreat, Disney Concierge) add space and private areas.</li></ul>
 <h2>4. Check the category name for warnings</h2><p>Lines flag compromises in the category name or on the deck plan legend: "partial view", "obstructed view", "inward facing", "promenade view". Cabins one deck above the lifeboats are the usual obstructed-view rooms.</p>
-<h2>5. Guarantee cabins</h2><p>A guarantee fare means the line picks your cabin within a category. It is cheaper, but you cannot choose the deck, so it is a poor bet for light sleepers or anyone prone to seasickness.</p>
+<h2>5. Guarantee cabins</h2><p>A guarantee fare means the line picks your cabin within a category. You cannot choose the deck, so it is a poor fit for light sleepers or anyone prone to seasickness. The <a href="{u('/guides/guarantee-cabins/')}">guarantee cabin guide</a> quotes what Royal Caribbean, Carnival, Norwegian, Celebrity and Princess actually say about assignment.</p>
 <h2>Worked example: {E(ex["name"])}</h2><p>On <a href="{u(ship_path(ex))}">{E(ex["name"])}</a>, decks {E(rng(ex["_quiet"]))} are the sandwiched cabin decks, while deck {E(rng(ex["_pool"]))} sits directly under the pool and sports deck. So a midship balcony on deck {E(ex["_quiet"][len(ex["_quiet"]) // 2])} is a strong all-round pick.</p>
 <h2>Ship-by-ship guides</h2><p>See the <a href="{u('/ships/')}">full list of ship guides</a>.</p>''',
       [("What is the best location for a cruise cabin?", "Midship, on a deck with cabin decks directly above and below, and away from elevators and service doors. That combination gives the least motion and the least noise."),
        ("Is it better to be on a high or low deck on a cruise ship?", "Lower decks move less in rough seas, which helps with seasickness. Higher decks are closer to the pools and buffet and often have more balcony cabins. The deck directly under the pool deck is the one to avoid if you sleep lightly."),
        ("Are aft cabins good on a cruise?", "Aft cabins can have large wake-view balconies and are often quieter at night. Some ships have more vibration and motion at the stern than midship, so if you are prone to seasickness choose midship instead."),
        ("Should I book a guarantee cabin?", "Only if price matters more than location. With a guarantee fare the line assigns the cabin, so you cannot avoid noisy or forward decks.")],
-      [CDC] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:3]])
+      [CDC] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:3]], modified=ADDED4, published=ADDED)
 
     guide("/guides/best-cabin-for-seasickness/", "Which Cabin Is Best for Seasickness", "Best cruise cabin location for seasickness",
       "The best cruise cabin for seasickness is low and midship with a view of the horizon. Why, what the CDC says, and the exact decks on each ship.", f'''
@@ -514,13 +525,14 @@ def guides():
 <li><strong>Low and forward.</strong> Closest to the bow thrusters and anchor gear, which can be loud when docking, and forward cabins feel the most motion.</li>
 <li><strong>Next to elevators, stair landings and crew doors.</strong> Foot traffic and doors banging. Unlabelled blocks on a deck plan are usually service areas.</li>
 <li><strong>Connecting cabins</strong> if you are not travelling with the people next door: the connecting door lets more sound through than a wall.</li>
+<li><strong>A guarantee fare</strong> when the deck matters. The line assigns the room. See <a href="{u('/guides/guarantee-cabins/')}">what each line says you give up</a>. A <a href="{u('/guides/hump-cabins/')}">hump cabin</a> is a different question: it is a spot where the hull steps out, and most official plans do not label it.</li>
 <li><strong>Partial or obstructed view.</strong> Usually lifeboats or structure in the way. Lines label these, so read the category name.</li>
 <li><strong>Inward-facing or promenade-view balconies</strong> if you want a sea view. They overlook an inside neighbourhood or promenade instead.</li></ol>
 <h2>Decks directly under the pool, ship by ship</h2><div class="tablewrap"><table class="list"><thead><tr><th scope="col">Ship</th><th scope="col">Cabin deck under pool, sports or buffet areas</th></tr></thead><tbody>{"".join(f'<tr><td><a href="{u(ship_path(s))}">{E(s["name"])}</a></td><td>{E(rng(s["_pool"])) or "None directly under"}</td></tr>' for s in SHIPS)}</tbody></table></div>''',
       [("Which cabin is the worst on a cruise ship?", "For most people, a cabin directly under the pool deck or directly above a nightclub or theatre, because of noise. For people prone to seasickness, a low forward cabin."),
        ("Are cabins near the elevator bad?", "They are convenient but get more foot traffic and noise. A few doors away from the elevator lobby gives you most of the convenience with less noise."),
        ("What does obstructed view mean on a cruise?", "Something, usually a lifeboat or part of the ship's structure, blocks some of the window or balcony view. Lines price and label these cabins separately.")],
-      [CDC] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[6:9]], modified=ADDED2)
+      [CDC] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[6:9]], modified=ADDED4, published=ADDED2)
 
     rows = "".join(f'<tr><td><a href="{u(ship_path(s))}">{E(s["name"])}</a></td><td>{E(LINES[s["line"]]["short"])}</td><td>{E(rng(s["_quiet"])) or "None"}</td><td>{E(rng(s["_pool"])) or "None"}</td></tr>' for s in SHIPS)
     guide("/guides/quietest-cruise-cabins/", "Which Cruise Cabin Decks Are Quietest", "The quietest cabin decks on every big cruise ship",
@@ -533,6 +545,82 @@ def guides():
        ("Are higher decks quieter on a cruise ship?", "Not automatically. The top cabin deck is often directly under the pool or sports deck. The quietest decks are usually in the middle of the ship's cabin block.")],
       [(f'CruiseMapper: {s["name"]} deck plans', DECKS[s["cm"]]["index"]) for s in SHIPS[:4]] + [(f'{LINES[s["line"]]["name"]}: {s["name"]} deck plans', s["official"]) for s in SHIPS[:4]], modified=ADDED2)
 
+    hump_reads = [
+        ("/guides/guarantee-cabins/", "What a guarantee cabin gives up", "A different gamble: the line picks the deck, not you."),
+        ("/ships/carnival-liberty/", "Carnival Liberty cabins", "The official plan we opened on 20 Nov 2026, which does not label a hump."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "Obstructed views, pool decks and connecting doors."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck first, then the spot on the deck, then the room."),
+    ]
+    guide("/guides/hump-cabins/", "What Is a Hump Cabin on a Cruise?", "What is a hump cabin on a cruise ship?",
+      "A hump cabin sits where the hull steps out. Plans opened 20 Nov 2026 do not use the word. Extra space is often the balcony.",
+      f'''{hero_figure("cruise-hump-cabin.png", "Daylit cruise balcony cabin with a wider opening onto the sea, no people and no logos")}
+<p class="byline">By the Which Cabin editorial team. <a href="{u('/methodology/')}">How we check a page</a>.</p>
+<div class="answer"><p><strong>Short answer:</strong> a hump cabin is the passenger name for a stateroom on the part of the hull that steps outward, usually around midship. <a href="https://www.cruisecritic.com/articles/best-cabins-on-any-cruise-ship" rel="nofollow noopener">Cruise Critic's cabin guide</a>, checked 20 Nov 2026, calls that curve the hump and says cabins where the hull goes from narrower to wider can have angled balconies that are a bit roomier than a typical balcony. It does not say the inside of the room is larger. We do not name a ship as having one unless that ship's own deck plan shows the step.</p></div>
+<h2>Why some of them are bigger</h2>
+<p>The extra width of the hull has to land somewhere. On the ships that article is describing, it lands in the balcony: an angled one, where the side of the ship changes width, can be deeper than the balcony on the straight run of the same category. That is a geometry claim, not a promise of a second sofa. If a plan does not print a size, we do not invent one.</p>
+<p>Passenger boards discuss the same shape on Celebrity's Solstice-class ships, and they argue about which balcony on the slant is the deep one. Those posts are not a deck plan. This page does not list <a href="{u('/ships/celebrity-equinox/')}">Celebrity Equinox</a> or <a href="{u('/ships/celebrity-solstice/')}">Celebrity Solstice</a> as hump ships.</p>
+<h2>Plans opened on 20 Nov 2026</h2>
+<p>Carnival's <a href="https://www.carnival.com/cruise-ships/carnival-liberty" rel="nofollow noopener">Liberty page</a> has a Download PDF link. The PDF saved that day (two pages, titled Deck Plans, Carnival Liberty) names the decks from Riviera (deck 1) through Sky (deck 14), lists oceanview categories 6A, 6B and 6C, and marks staterooms 2446 and 2449 as obstructed views in category 6B. It prints gross tonnage 110,000 and a double-occupancy capacity of 2,974. It does not use the word hump, and it does not give a square footage for those oceanviews. The side-on drawing shows the usual lifeboat bulge in the profile. A lifeboat bulge is not a hump cabin. Our <a href="{u('/ships/carnival-liberty/')}">Liberty cabin guide</a> uses that plan for noise, not for a hump call.</p>
+<p>Celebrity's <a href="https://www.celebritycruises.com/cruise-ships/celebrity-equinox/deck-plans" rel="nofollow noopener">Equinox deck-plan page</a>, saved the same day, does not contain the word hump. We did not find a downloadable plan on that page that labels one.</p>
+<aside class="compare" aria-label="Check another guide"><h2>Check another guide</h2>
+<p>A hump is a shape in the hull. A guarantee fare is the line choosing the cabin for you. They get confused because both sound like a shortcut.</p>
+<p class="compare-links"><a href="{u('/guides/guarantee-cabins/')}">Guarantee cabins</a> · <a href="{u('/guides/cruise-cabins-to-avoid/')}">Cabins to avoid</a> · <a href="{u('/ships/carnival-liberty/')}">Carnival Liberty</a></p></aside>
+{next_reads("/guides/hump-cabins/", hump_reads, "Keep reading")}
+<h2>How to spot one on a plan you have open</h2>
+<p>Look at the outline of the deck, not the marketing name. A hump is a step or a curve in the side of the ship with cabins along it. Then read the category. If the plan says obstructed, it is an obstructed cabin, which <a href="{u('/guides/cruise-cabins-to-avoid/')}">cabins to avoid</a> already covers, whether or not the hull steps out beside it. If the plan gives two sizes for the same category, the larger one is the fact. If it gives one size, or none, the room is not "bigger" in any way we can cite.</p>
+<p>Ships we have not opened a plan for are not on this page. Adding a name because a forum uses it would be a guess. The <a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">how to choose</a> guide is the decision order when the plan does not show a hump at all: deck, then the spot on the deck, then the room type.</p>''',
+      [("Are hump cabins bigger?", "Cruise Critic's guide, checked 20 Nov 2026, says angled balconies where the hull changes width may be roomier than a typical balcony. It does not say the interior is larger. The Carnival Liberty deck plan PDF opened the same day prints no square footage for its oceanviews."),
+       ("Does Carnival Liberty have hump cabins?", "Its official deck plan PDF, downloaded 20 Nov 2026, does not use the word. It does label oceanview staterooms 2446 and 2449 as obstructed views. Those are obstructed cabins, not a cited hump."),
+       ("Which ships have hump cabins?", "None of the official plans opened for this page on 20 Nov 2026 label one. Celebrity Equinox is discussed on passenger boards. Its deck-plan page that day did not contain the word, so it is not listed here.")],
+      [("Cruise Critic: Best cabins on any cruise ship", "https://www.cruisecritic.com/articles/best-cabins-on-any-cruise-ship"),
+       ("Carnival Cruise Line: Carnival Liberty", "https://www.carnival.com/cruise-ships/carnival-liberty"),
+       ("Carnival Cruise Line: Carnival Liberty deck plan PDF", "https://www.carnival.com/-/media/f5ce40c3eac947bbbda1aed62cc38380.ashx"),
+       ("Celebrity Cruises: Celebrity Equinox deck plans", "https://www.celebritycruises.com/cruise-ships/celebrity-equinox/deck-plans")],
+      modified=ADDED4, end_reads=hump_reads)
+
+    gty_reads = [
+        ("/guides/hump-cabins/", "What a hump cabin is", "A hull shape, not a fare. Most plans do not label it."),
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "What you give up when you cannot pick the deck."),
+        ("/ships/icon-of-the-seas/", "Icon of the Seas cabins", "Oasis and Icon ships can assign a neighbourhood-view balcony."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "The decks a guarantee fare can still hand you."),
+    ]
+    guide("/guides/guarantee-cabins/", "What Is a Cruise Guarantee Cabin?", "What is a cruise guarantee cabin?",
+      "A guarantee cabin books a category, not a deck. When Royal Caribbean, Carnival, NCL, Celebrity and Princess assign the room.",
+      f'''{hero_figure("cruise-cabin-keycard-door.png", "A cruise cabin door and keycard lock in ordinary corridor light, no people and no logos")}
+<p class="byline">By the Which Cabin editorial team. <a href="{u('/methodology/')}">How we check a page</a>.</p>
+<div class="answer"><p><strong>Short answer:</strong> you book a category, such as inside, ocean view, balcony or suite. The line picks the cabin number and the deck later. You keep the category you booked. You give up choosing a quiet deck, a midship spot, or a clear view. Assignment timing is not the same on every line. The dates below are 20 Nov 2026.</p></div>
+<h2>What you get, and what you give up</h2>
+<p>You get a stateroom in the category the line agreed, or, where the line's own text says so, a higher one. You do not get to refuse the deck afterwards. <a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">Choosing a cabin</a> starts with the deck because a balcony under the pool is still under the pool. A guarantee fare skips that step. It is a poor match for a light sleeper or for anyone who needs a particular bed or to be next to another cabin. It is a reasonable match only if the deck truly does not matter to you. That is a description of the trade, not a nudge to book one.</p>
+<h2>What each line's own page says</h2>
+<div class="tablewrap"><table class="list"><thead><tr><th scope="col">Line</th><th scope="col">What is fixed</th><th scope="col">When they assign the room</th></tr></thead><tbody>
+<tr><td>Royal Caribbean</td><td>Interior, ocean view, balcony or suite. The number and location are theirs to choose. Views may be obstructed. On Oasis and Icon class ships the balcony may face Central Park, the Boardwalk or Surfside.</td><td>At their discretion, any time up until check-in at the port. Back-to-back cruises can be different cabins, so you may have to move on the changeover day.</td></tr>
+<tr><td>Carnival</td><td>You choose the type (interior, balcony and the others on their page). Carnival chooses the location and the deck.</td><td>They say they will contact you with the location prior to sailing. Their page does not give a day count.</td></tr>
+<tr><td>Norwegian</td><td>Sail Away categories IX, OX, BX and MX only. The assignment is at Norwegian's discretion.</td><td>Any time up to the day of sailing. The terms we checked do not promise a clear view.</td></tr>
+<tr><td>Celebrity</td><td>A minimum category, not a specific stateroom. After it is allocated, Celebrity's conditions say they cannot take a change request. The room may have upper berths.</td><td>Any time until check-in at the port. A higher category is something they may offer. It is not something the conditions let you require.</td></tr>
+<tr><td>Princess</td><td>The grade you booked, or higher. It can be anywhere on the ship. A queen bed is not assured, because not every room converts.</td><td>Often not until close to travel, and occasionally not until you embark. Princess asks you to check Manage Booking about a week before, by which time most cabins have been allocated.</td></tr>
+</tbody></table></div>
+<p class="note">Row by row, this is the line's wording, paraphrased, from the pages in Sources. It is not a Which Cabin rule layered on top.</p>
+<aside class="compare" aria-label="Check another guide"><h2>Check another guide</h2>
+<p>If you care where the room sits, pick the ship and the deck on that ship's page. A guarantee fare and a hump cabin solve different problems.</p>
+<p class="compare-links"><a href="{u('/guides/hump-cabins/')}">Hump cabins</a> · <a href="{u('/ships/icon-of-the-seas/')}">Icon of the Seas</a> · <a href="{u('/guides/quietest-cruise-cabins/')}">Quietest decks</a></p></aside>
+{next_reads("/guides/guarantee-cabins/", gty_reads, "Keep reading")}
+<h2>Royal Caribbean, in their words</h2>
+<p>The <a href="https://www.royalcaribbean.com/faq/questions/what-is-a-guarantee-stateroom" rel="nofollow noopener">guarantee FAQ</a> calls it a Guarantee or "We Pick" booking. The promotional categories on that page are WS for suite or deluxe, XB for balcony, XN for a neighbourhood-view balcony on Oasis and Icon class only, YO for ocean view and ZI for interior. Separate parties may not be berthed together. On <a href="{u('/ships/icon-of-the-seas/')}">Icon of the Seas</a> and the Oasis-class ships, a neighbourhood view is a real outcome, not a rumour. Our Icon page already flags inward-facing balconies for that reason.</p>
+<h2>Carnival and Norwegian</h2>
+<p>Carnival's <a href="https://www.carnival.com/cruise-deals/cruise-discounts/guarantee" rel="nofollow noopener">guarantee page</a> is short. You choose the type. They choose the stateroom location and the deck, and they contact you before sailing. Norwegian's <a href="https://www.ncl.com/cruise-deals/promotion-terms/sailaway" rel="nofollow noopener">Sail Away terms</a> limit the offer to categories IX, OX, BX and MX, and they say assignment can happen at any time up to the day of sailing.</p>
+<h2>Celebrity and Princess</h2>
+<p>Celebrity's English <a href="https://www.celebritycruises.com/guest-terms/master-booking-conditions-english/" rel="nofollow noopener">booking conditions for other locations</a>, section 1.8, are the page we used. The <a href="https://www.celebritycruises.com/guest-terms/united-kingdom-english/" rel="nofollow noopener">UK conditions</a> describe the same core rule, so this is not a single-market footnote. Both say the location is allocated any time until port check-in, changes are not accepted after that, and a higher category may be given at Celebrity's discretion. Upper berths, reached by a ladder, are allowed, and the conditions say those berths are for guests over 6, so they suggest not booking a guarantee if you are travelling with young children or need to be near someone else. Princess's <a href="https://www.princess.com/faq/pre-cruise" rel="nofollow noopener">pre-cruise FAQ</a> is the outlier on the clock: the number often arrives very late, sometimes at embarkation, and a queen bed is specifically not assured.</p>''',
+      [("When is a guarantee cabin assigned?", "Royal Caribbean says any time until port check-in. Carnival says they will contact you prior to sailing and gives no day count. Norwegian's Sail Away terms say any time up to the day of sailing. Celebrity says any time until port check-in. Princess says often close to travel, occasionally at embarkation, and asks you to look about a week out."),
+       ("Can the line give you a better category?", "Celebrity's conditions say they may move you to a higher category and that you cannot require it. Princess says the grade you booked, or higher. Royal Caribbean's FAQ promises the category type you booked and warns the view may be obstructed. None of these pages promise a particular deck."),
+       ("What do you give up?", "The deck, the cabin number and, on several of these pages, an unobstructed view or a particular bed. You also may not be placed next to another party. If those matter, the line's own text says this is the wrong fare.")],
+      [("Royal Caribbean: What is a guarantee or We Pick stateroom?", "https://www.royalcaribbean.com/faq/questions/what-is-a-guarantee-stateroom"),
+       ("Carnival Cruise Line: We choose your room", "https://www.carnival.com/cruise-deals/cruise-discounts/guarantee"),
+       ("Norwegian Cruise Line: Sail Away rates terms", "https://www.ncl.com/cruise-deals/promotion-terms/sailaway"),
+       ("Celebrity Cruises: booking conditions, all other locations (section 1.8)", "https://www.celebritycruises.com/guest-terms/master-booking-conditions-english/"),
+       ("Celebrity Cruises: United Kingdom booking conditions", "https://www.celebritycruises.com/guest-terms/united-kingdom-english/"),
+       ("Princess Cruises: pre-cruise FAQ, cabin number allocation", "https://www.princess.com/faq/pre-cruise")],
+      modified=ADDED4, end_reads=gty_reads)
+
 def home():
     lines = "".join(f'<li class="card"><h3><a href="{u("/lines/" + k + "/")}">{E(L["name"])}</a></h3><p>' + ", ".join(f'<a href="{u(ship_path(s))}">{E(s["name"])}</a>' for s in SHIPS if s["line"] == k) + '</p></li>' for k, L in LINES.items())
     faqs = [
@@ -544,10 +632,10 @@ def home():
 <p class="answer">Deck-by-deck guides to the best cabins and the ones to avoid on {len(SHIPS)} of the biggest cruise ships. We map what is above and below every cabin deck from published deck-by-deck listings, with a link to each line's own deck plan, so you can ask for a quiet cabin before you book.</p>
 <p class="btnrow"><a class="btn" href="{u('/ships/')}">Find your ship</a> <a class="btn alt" href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a></p></section>
 <h2>Ships by cruise line</h2><ul class="cards">{lines}</ul>
-<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li></ul>
+<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li><li><a href="{u('/guides/hump-cabins/')}">What a hump cabin is</a></li><li><a href="{u('/guides/guarantee-cabins/')}">What a guarantee cabin gives up</a></li></ul>
 <h2>How it works</h2><p>For every ship we take the deck-by-deck listing of the current deck plan, mark each deck as cabins, public venues or a mix, and flag cabin decks that sit directly under pools and sports areas or over bars and theatres. Then we add ship-specific tips and cite every source. We are independent: no cruise line pays for coverage. <a href="{u('/methodology/')}">Sources and methods</a>.</p>
 {faq_block(faqs)}'''
-    write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED2))
+    write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED4))
 
 def simple(path, title, desc, h1, inner, crumb=None, noindex=False, modified=TODAY):
     write(path, page(path, title, desc, f'<article class="prose"><h1>{E(h1)}</h1>{inner}</article>', None, [("/", "Home"), (path, crumb or h1)], noindex=noindex, modified=modified))
@@ -568,11 +656,11 @@ def about_legal():
 <h2>What we do not do</h2><p>We do not copy deck plan images or cruise line text. Diagrams on this site are our own. We do not publish prices or availability, which change daily.</p>
 <h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED4)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
-<p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
-<h2>Photos</h2><p>The site currently uses no ship photos. We do not use cruise line photos or deck plan images without permission.</p>
-<h2>AI-generated images</h2><p>If we add AI-generated illustrations, each will carry a visible "AI-generated image" credit, will not depict real people, and will never be presented as a photo of a real ship or cabin.</p>
+<p>Last updated {humandate(ADDED4)}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
+<h2>Photos</h2><p>Photographs on guides, when a page has one, are AI-generated. Each one is captioned "AI-generated image" and the picture links to this page. They are not photos of a real ship, a real cabin or a real person, and they are not cruise line pictures. We do not copy deck plan images.</p>
+<h2>AI-generated images</h2><p>An AI-generated photo is labelled in the caption next to the picture. It does not depict a real person, and it is not presented as a photo of a named ship.</p>
 <h2>Logos and trademarks</h2><p>We do not display cruise line logos. Names are used only to identify ships.</p>
-<h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy")
+<h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy", modified=ADDED4)
     contact = f'''<p>Questions, corrections after a refit, or a ship you want us to cover next? Send a message and we will reply by email.</p>
 <h2>Corrections</h2><p>Include the page address, what looks wrong and, if you can, a link to the cruise line's deck plan that shows it. We update the "checked" date when we re-verify.</p>
 <p class="form-status" id="contact-status" role="status" hidden></p>
@@ -645,7 +733,7 @@ def extras():
     open(os.path.join(ROOT, "robots.txt"), "w").write("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + f"Sitemap: {BASE_URL}sitemap.xml\n")
     open(os.path.join(ROOT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{url(p)}</loc><lastmod>{m}</lastmod></url>\n" for p, m in PAGES) + "</urlset>\n")
     ll = [f"# {BRAND}", "", f"> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on {len(SHIPS)} of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked {TODAY_H}.", "", "Independent; not affiliated with any cruise line. Layouts change; confirm on the line's deck plan.", "", "## Guides",
-          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
+          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [What a hump cabin is]({url('/guides/hump-cabins/')})", f"- [What a guarantee cabin gives up]({url('/guides/guarantee-cabins/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
     for s in SHIPS: ll.append(f"- [{s['name']}]({url(ship_path(s))}) ({LINES[s['line']]['short']}): quiet cabin decks {rng(s['_quiet']) or 'none'}; cabin deck under pools {rng(s['_pool']) or 'none'}")
     open(os.path.join(ROOT, "llms.txt"), "w").write("\n".join(ll) + "\n")
     open(os.path.join(ROOT, "favicon.svg"), "w").write(LOGO.replace('width="34" height="34" ', 'xmlns="http://www.w3.org/2000/svg" ').replace(' aria-hidden="true" focusable="false"', ""))
