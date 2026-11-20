@@ -131,7 +131,24 @@ def adsense_head():
 def consent_banner():
     return f'''<div id="consent-banner" class="consent" hidden role="region" aria-label="Cookie settings"><p>Cloudflare Web Analytics does not use cookies. Google Analytics 4 loads only after you accept. <a href="{u('/privacy/')}">Privacy</a></p><div class="btnrow"><button type="button" class="btn" id="consent-accept">Accept</button><button type="button" class="btn alt" id="consent-reject">Reject</button></div></div>'''
 
+# AdSense low-value-content fix (20 Nov 2026): paths listed in _build/thin-noindex.txt
+# get noindex,follow and stay out of the sitemap until they have real unique substance.
+_THIN_NOINDEX = set()
+try:
+    import os as _os
+    with open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "thin-noindex.txt"), encoding="utf-8") as _fh:
+        _THIN_NOINDEX = {l.strip().strip("/") for l in _fh if l.strip() and not l.startswith("#")}
+except FileNotFoundError:
+    pass
+
+
+def _is_thin(path):
+    return str(path).strip("/") in _THIN_NOINDEX
+
+
 def page(path, title, desc, body, jsonld=None, crumbs=None, noindex=False, legal=False, modified=TODAY, og_type="website"):
+    if _is_thin(path):
+        noindex = True
     if len(title) >= 60: raise SystemExit(f"title {len(title)} chars: {title}")
     desc = clip(desc)
     if len(desc) > 160: raise SystemExit(f"desc {len(desc)} chars: {desc}")
@@ -506,6 +523,7 @@ def about_legal():
 <p>Google Analytics 4 measures how the site is used. It does not load until you press Accept on the cookie banner, and only when a measurement id is set for the launch build. Before that choice we set Google Consent Mode v2 defaults to denied, including analytics storage, ad storage, ad user data and ad personalisation. If you accept, Google Analytics 4 may set cookies to recognise this browser. If you reject, we do not load it. Ad storage stays denied for now because no ad units are displayed. The Cookie settings link in the footer opens the banner again. We remember the choice in local storage on your device, not in a cookie of our own.</p>
 <h2>Contact form</h2><p>If you use the contact form, your name, email address and message are sent through FormSubmit (formsubmit.co), a form-to-email service, so we can reply. We use them only to respond and keep them only as long as needed.</p>
 <h2>Advertising</h2><p>Which Cabin is preparing for Google AdSense. Pages include Google's AdSense account meta tag and the AdSense script (publisher id {E(ADSENSE_PUB)}), and we publish an <a href="{u('/ads.txt')}">ads.txt</a> file that authorises Google to sell inventory for this site. No ad units are placed on pages yet, so you will not see ads, and Consent Mode keeps ad storage, ad user data and ad personalisation denied.</p>
+<h2>Google advertising cookies and your choices</h2><p>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to this site and/or other sites on the Internet. You may opt out of personalized advertising by visiting <a href="https://adssettings.google.com/" rel="nofollow noopener">Google Ads Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising at <a href="https://www.aboutads.info/choices/" rel="nofollow noopener">aboutads.info/choices</a>. For more information, see <a href="https://policies.google.com/technologies/partner-sites" rel="nofollow noopener">how Google uses information from sites or apps that use its services</a>.</p>
 <p>When ad units go live, third-party vendors including Google may use cookies to serve ads based on your prior visits to this and other websites. You will be able to opt out of personalised advertising at <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a> and <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>. Where the law requires it (for example in the EEA, the UK and Switzerland), we will ask for consent through a certified consent management platform before any advertising cookies are set, and we will update this policy and the cookie banner before that change.</p>
 <h2>Cookies</h2><p>Which Cabin does not set its own cookies. Cloudflare Web Analytics does not use cookies. Google Analytics 4 may set cookies only after you accept. You can block or delete cookies in your browser. The site works if you reject analytics. Use Cookie settings in the footer to change your mind, or clear this site's data in your browser to forget the saved choice.</p>
 <h2>Hosting</h2><p>The site is hosted on GitHub Pages, which may log IP addresses for security and operations.</p>
