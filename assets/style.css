@@ -36,4 +36,5 @@ footer.site{background:var(--navy);color:#eef3f6;padding:1.5rem 0;margin-top:2re
 .nextreads li{display:grid;gap:.15rem;padding:.55rem .65rem;border-left:4px solid var(--teal);background:var(--tint);border-radius:0 8px 8px 0}
 .nextreads li a{text-decoration:none}.nextreads li a:hover strong{text-decoration:underline}
 .nextreads li span{color:var(--muted);font-size:.94rem}
+.article-thumb{margin:1rem 0 1.4rem;padding:0;border:0}.article-thumb img{display:block;width:100%;height:auto;border-radius:8px}.article-thumb figcaption{font-size:.9rem;color:var(--muted);margin-top:.4rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
