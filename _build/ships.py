@@ -226,6 +226,32 @@ SHIP_EXTRA = {
   ("Same skeleton, a smaller stateroom count",
    "CruiseMapper's Jubilee index, checked 20 Nov 2026, counts 2,626 staterooms, against 2,641 on Celebration. Family Harbor is still on deck 4 with cabins and the kids' area, which matches Carnival's line that Family Harbor staterooms sit near that lounge. Deck 19 is still Loft 19 and BOLT, with no cabins, so deck 17 is still the cabin deck under the coaster and the adult Serenity area on deck 18. Use Jubilee's own labels for the neighbourhood names. Do not copy them across from Celebration."),
  ],
+ "celebrity-ascent": [
+  ("In service 22 November 2023, same tons as Beyond, not as Edge",
+   "Wikipedia's infobox, checked 21 Nov 2026, lists Celebrity Ascent in service on 22 November 2023, with a maiden voyage on 3 December 2023, builder Chantiers de l'Atlantique, 141,420 gross tons, a length of 326.5 metres, a beam of 39.5 metres, 3,260 passengers at double occupancy and 3,937 maximum. The same day's check of Celebrity Beyond's infobox shows the same tonnage, length, beam and both passenger counts, with in-service date 21 April 2022. Celebrity Edge's own page lists 130,818 gross tons and 2,918 guests. Ascent is the later large hull, not a rename of Edge."),
+  ("A file named Ascent that does not describe this ship",
+   "A Celebrity PDF at the file name CEL-Ascent_FactSheet.pdf, copyright line March 2026, prints a maiden voyage of 5 April 2020, builder STX France, double occupancy 2,886 and maximum occupancy 3,260. Those figures collide with the infobox above (the maximum on the PDF is the double-occupancy figure on the infobox). The table on this page keeps the DNV-cited Wikipedia figures. The PDF is linked in the sources so the conflict is visible, and it is not used for the noise map."),
+  ("Deck labels still match Beyond's, and were not re-scraped today",
+   "The deck-by-deck labels held for Ascent and for Beyond are the same stack: cabins with Eden on deck 6, cabin decks 7 to 10, cabins and Iconic Suites on deck 12, no deck 13, and the spa, lido and pools on deck 14. Those labels were read 16 Nov 2026. They were not opened again on CruiseMapper on 21 Nov 2026. The new check is the infobox, not a new drawing of the decks."),
+ ],
+ "celebrity-beyond": [
+  ("Same large hull as Ascent, eighteen months earlier",
+   "Wikipedia's infobox, checked 21 Nov 2026, lists Celebrity Beyond in service on 21 April 2022 and a maiden voyage on 27 April 2022, built at Chantiers de l'Atlantique, 141,420 gross tons, 326.5 metres long, 39.5 metres of beam, 3,260 guests at double occupancy and 3,937 maximum. Celebrity Ascent's infobox on the same check matches the size and the passenger counts and moves the in-service date to 22 November 2023. Edge remains the smaller ship on its own page: 130,818 gross tons and 2,918 guests."),
+  ("The May 2026 fact sheet agrees on tons and not on length",
+   "Celebrity's Beyond fact sheet, copyright May 2026, with figures based on the 2027-2028 season, prints 141,420 tons and a maiden voyage of 27 April 2022, which match the infobox. It also prints a length of 1,004 feet, double occupancy of 3,228, a maximum of 3,836 and builder STX France, which do not match the infobox's DNV-cited length, passenger counts or yard. The table on this page keeps the infobox. The fact sheet does add room counts the infobox does not: 1,646 staterooms, two Iconic Suites at 1,892 sq ft plus a 689 sq ft veranda, and 576 staterooms on a line labelled Accommodates 3 or 4. It does not say how many people an Iconic Suite sleeps."),
+  ("Eden is three decks, and the Magic Carpet list is not our label list",
+   "The Wikipedia article checked 21 Nov 2026 calls Eden a three-deck lounge with a ramp between decks 5 and 6. Our labels put Eden on decks 4, 5 and 6, with cabins sharing deck 6. The same article says the Magic Carpet is used at decks 5, 14 and 16. Our labels put Magic Carpet on deck 2, with the crew and hospital line, and on deck 16 with Luminae. Those are two different lists. Until Celebrity's own plan is the one being read, do not treat them as the same three stops."),
+ ],
+ "celebrity-edge": [
+  ("The smaller Edge-class hull",
+   "The figures already on this page are the ones to use for size: builder STX France, in service December 2018, 130,818 gross tons, 2,918 guests. Celebrity Apex's page lists the same 130,818 gross tons, a March 2020 in-service date, Chantiers de l'Atlantique and 2,910 guests. Celebrity Beyond and Celebrity Ascent, from Wikipedia infoboxes checked 21 Nov 2026, are 141,420 gross tons and 3,260 guests at double occupancy. Sharing the Edge-class notes does not make these one ship."),
+  ("The only occupancy number on Edge's own stateroom page is 10",
+   "Celebrity's Edge stateroom page, checked 21 Nov 2026, prints square footage for the Infinite Veranda (243 sq ft of living space), the single (184 sq ft) and the other categories, and it does not print a guest count on those rooms. It says there are 178 connecting options, including two adjoining Infinite Veranda staterooms joined into one, and that the Iconic Suite connected to the Royal Suite comfortably sleeps 10. A party of five is not given a single-room number on that page."),
+ ],
+ "celebrity-apex": [
+  ("Edge's tonnage, not Beyond's, and a different yard from Edge",
+   "This page's table already lists Chantiers de l'Atlantique, March 2020, 130,818 gross tons and 2,910 guests. Those figures were not re-opened on Wikipedia on 21 Nov 2026. What was re-opened that day is Ascent and Beyond, both 141,420 gross tons and 3,260 at double occupancy. Apex matches Edge's tonnage (Edge's page says 130,818 and 2,918, built at STX France, in service December 2018) and not the later large hulls. The deck labels behind the noise map are the shared Edge-class set read 16 Nov 2026, including deck 12 directly under the pool deck because there is no deck 13."),
+ ],
 }
 
 SHIP_FAQS = {
@@ -252,6 +278,18 @@ SHIP_FAQS = {
    "Carnival's Jubilee page names Currents and The Shores as the new zones. CruiseMapper's index, checked 20 Nov 2026, puts Currents on decks 6 and 7 and adds The Shores to deck 8 beside Havana. Celebration's matching labels say Gateway, and deck 8 stops at Havana."),
   ("When did Carnival Jubilee enter service?",
    "Wikipedia's infobox, checked 20 Nov 2026, lists completion on 4 December 2023 and a maiden voyage on 23 December 2023. Builder is Meyer Werft in Papenburg. Gross tonnage is 183,521, the same figure listed for Celebration."),
+ ],
+ "celebrity-ascent": [
+  ("When did Celebrity Ascent enter service?",
+   "Wikipedia's infobox, checked 21 Nov 2026, lists in service on 22 November 2023 and a maiden voyage on 3 December 2023. Celebrity Beyond's infobox on the same check lists in service on 21 April 2022. Both show 141,420 gross tons and 3,260 guests at double occupancy."),
+ ],
+ "celebrity-beyond": [
+  ("Is Celebrity Beyond the same size as Celebrity Edge?",
+   "No. Wikipedia's infobox, checked 21 Nov 2026, lists Beyond at 141,420 gross tons and 3,260 guests at double occupancy. Edge's page lists 130,818 gross tons and 2,918 guests. Celebrity's May 2026 Beyond fact sheet also prints 141,420 tons, and it prints a different length and a different double occupancy, so those two sources do not match on every number."),
+ ],
+ "celebrity-edge": [
+  ("Does Celebrity Edge publish a cabin that sleeps five?",
+   "Not on the stateroom page checked 21 Nov 2026. That page gives square footage without a guest count, and the occupancy it does print is for the Iconic Suite connected to the Royal Suite, which it says comfortably sleeps 10."),
  ],
 }
 
@@ -429,13 +467,19 @@ SHIPS = [
  dict(slug="msc-divina", name="MSC Divina", line="msc", cm="MSC-Divina-549", official="https://www.msccruises.com/int/our-cruises/ships/msc-divina", wiki="MSC_Divina",
       facts=dict(cls="Fantasia class", builder="Chantiers de l'Atlantique", service="May 2012", gt="139,072", guests="3,502"), notes=DIVINA_N, sister=[], checked="2026-11-16"),
  dict(slug="celebrity-beyond", name="Celebrity Beyond", line="celebrity", cm="Celebrity-Beyond-1690", official=CEL.format("celebrity-beyond"), wiki="Celebrity_Beyond",
-      facts=dict(cls="Edge class", builder="Chantiers de l'Atlantique", service="April 2022", gt="141,420", guests="3,260 (double occupancy)"), notes=EDGE, sister=["celebrity-apex", "celebrity-ascent", "celebrity-edge"]),
+      facts=dict(cls="Edge class", builder="Chantiers de l'Atlantique", service="21 April 2022", gt="141,420", guests="3,260 (double occupancy)"), notes=EDGE,
+      extra_sources=[("Celebrity Cruises: Beyond fact sheet, May 2026", "https://creative.rccl.com/Sales/Celebrity/General_Info/Fact_sheets/CEL-Beyond-FactSheets-Mice.pdf")],
+      sister=["celebrity-apex", "celebrity-ascent", "celebrity-edge"], checked="2026-11-21", published="2026-11-15"),
  dict(slug="celebrity-ascent", name="Celebrity Ascent", line="celebrity", cm="Celebrity-Ascent-2194", official=CEL.format("celebrity-ascent"), wiki="Celebrity_Ascent",
-      facts=dict(cls="Edge class", builder="Chantiers de l'Atlantique", gt="141,420", guests="3,260 (double occupancy)"), notes=EDGE, sister=["celebrity-apex", "celebrity-beyond", "celebrity-edge"]),
+      facts=dict(cls="Edge class", builder="Chantiers de l'Atlantique", service="22 November 2023", gt="141,420", guests="3,260 (double occupancy)"), notes=EDGE,
+      extra_sources=[("Celebrity PDF file named CEL-Ascent_FactSheet.pdf (figures conflict; not used in the table)", "https://creative.rccl.com/Sales/Celebrity/General_Info/Fact_sheets/CEL-Ascent_FactSheet.pdf")],
+      sister=["celebrity-apex", "celebrity-beyond", "celebrity-edge"], checked="2026-11-21", published="2026-11-15"),
  dict(slug="celebrity-edge", name="Celebrity Edge", line="celebrity", cm="Celebrity-Edge-1588", official=CEL.format("celebrity-edge"), wiki="Celebrity_Edge",
-      facts=dict(cls="Edge class", builder="STX France", service="December 2018", gt="130,818", guests="2,918"), notes=EDGE, sister=["celebrity-apex", "celebrity-beyond", "celebrity-ascent"]),
+      facts=dict(cls="Edge class", builder="STX France", service="December 2018", gt="130,818", guests="2,918"), notes=EDGE,
+      extra_sources=[("Celebrity Cruises: Celebrity Edge staterooms", "https://www.celebritycruises.com/cruise-ships/celebrity-edge/staterooms")],
+      sister=["celebrity-apex", "celebrity-beyond", "celebrity-ascent"], checked="2026-11-21", published="2026-11-15"),
  dict(slug="celebrity-apex", name="Celebrity Apex", line="celebrity", cm="Celebrity-Apex-1587", official=CEL.format("celebrity-apex"), wiki="Celebrity_Apex",
-      facts=dict(cls="Edge class", builder="Chantiers de l'Atlantique", service="March 2020", gt="130,818", guests="2,910"), notes=EDGE, sister=["celebrity-edge", "celebrity-beyond", "celebrity-ascent"], checked="2026-11-16"),
+      facts=dict(cls="Edge class", builder="Chantiers de l'Atlantique", service="March 2020", gt="130,818", guests="2,910"), notes=EDGE, sister=["celebrity-edge", "celebrity-beyond", "celebrity-ascent"], checked="2026-11-21", published="2026-11-16"),
  dict(slug="celebrity-reflection", name="Celebrity Reflection", line="celebrity", cm="Celebrity-Reflection-685", official=CEL.format("celebrity-reflection"), wiki="Celebrity_Reflection",
       facts=dict(cls="Solstice class", builder="Meyer Werft", service="October 2012", gt="125,366", guests="3,046"),
       notes=SOLSTICE + [("Spa on deck 12, suites on the lido", "Deck 12 mixes cabins with the spa. Deck 14 lists suites with the lido, sundeck and pools.")],

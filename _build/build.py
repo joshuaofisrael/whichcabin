@@ -81,6 +81,7 @@ GUIDE_LINKS = [
     ("/guides/connecting-cruise-cabins/", "Connecting cruise cabins"),
     ("/guides/hump-cabins/", "What a hump cabin is"),
     ("/guides/guarantee-cabins/", "What a guarantee cabin gives up"),
+    ("/guides/cabins-for-five/", "Cabins that sleep five"),
 ]
 def related(path, extra=()):
     seen, items = set(), []
@@ -330,8 +331,9 @@ def ship_page(s):
         }
         o = ship_by(prefer.get(s["slug"]) or s["sister"][0])
         sib = f' Compare the noise map with <a href="{u(ship_path(o))}">{E(o["name"])}</a>.'
+        fam = f' A party of five is a different question: <a href="{u("/guides/cabins-for-five/")}">which cabin types sleep five or more</a>.' if chk == ADDED5 else ""
         extra_html = (f'<h2>What is different on {E(s["name"])}</h2>{extra_html}'
-                      f'<p>The dates above were checked {chk_h}.{sib} The deck method is the same one in <a href="{u("/guides/quietest-cruise-cabins/")}">quietest cabin decks</a> and <a href="{u("/guides/cruise-cabins-to-avoid/")}">cabins to avoid</a>, and the order of decisions is in <a href="{u("/guides/how-to-choose-a-cruise-cabin/")}">how to choose a cabin</a>.</p>\n')
+                      f'<p>The dates above were checked {chk_h}.{sib}{fam} The deck method is the same one in <a href="{u("/guides/quietest-cruise-cabins/")}">quietest cabin decks</a> and <a href="{u("/guides/cruise-cabins-to-avoid/")}">cabins to avoid</a>, and the order of decisions is in <a href="{u("/guides/how-to-choose-a-cruise-cabin/")}">how to choose a cabin</a>.</p>\n')
         byline_html = f'<p class="byline">By the Which Cabin editorial team. Sources and the checked date are at the bottom of the page. <a href="{u("/methodology/")}">How we check a ship</a>.</p>\n'
     mid_reads = next_reads(ship_path(s), _ship_read_items(s), "Keep reading") if engage else ""
     end_reads = next_reads(ship_path(s), _ship_read_items(s), "Next reads") if engage else ""
@@ -431,8 +433,48 @@ def _line_bundle(k):
              "Wish, Treasure and Destiny share the Wish-class notes. Dream and Fantasy share the Dream-class notes. Magic and Wonder share the Magic-class notes. Open the ship, not the line, before you pick a deck."),
         ]
         return html, faqs
+    if k == "celebrity":
+        html = f'''<h2>Two Edge-class sizes, then a different Solstice stack</h2>
+<p>The seven Celebrity ships here are not one deck plan with the name swapped. Edge and Apex are the smaller Edge-class hulls. Beyond and Ascent are the later, larger ones. Reflection, Equinox and Solstice are Solstice class, and their pool deck is not deck 14 in the Edge-class sense.</p>
+<p>Wikipedia infoboxes checked 21 Nov 2026 list <a href="{u("/ships/celebrity-beyond/")}">Celebrity Beyond</a> and <a href="{u("/ships/celebrity-ascent/")}">Celebrity Ascent</a> at 141,420 gross tons and 3,260 guests at double occupancy. Beyond entered service on 21 April 2022. Ascent entered service on 22 November 2023. The figures already on the ship pages put <a href="{u("/ships/celebrity-edge/")}">Celebrity Edge</a> at 130,818 gross tons and 2,918 guests, in service December 2018, built at STX France, and <a href="{u("/ships/celebrity-apex/")}">Celebrity Apex</a> at the same 130,818 gross tons and 2,910 guests, in service March 2020, built at Chantiers de l'Atlantique. Apex's own infobox was not re-opened on 21 Nov. The size gap is the point: copying an Edge tip onto Beyond copies it onto a larger ship.</p>
+<p>The shared Edge-class notes, from the deck labels read 16 Nov 2026, still apply to all four: the Infinite Veranda is not a chair-and-table balcony, partial-view codes are marked by Celebrity, deck 12 sits under the pools because there is no deck 13, and the Magic Carpet moves on the starboard side. Those notes do not say the four ships are the same size. For a party of five, Edge's own stateroom page, checked 21 Nov 2026, does not label a single room as sleeping 5. The number it does print is for the Iconic Suite connected to the Royal Suite, which it says sleeps 10. The <a href="{u("/guides/cabins-for-five/")}">family-of-five guide</a> has the line-by-line version of that.</p>
+<h2>Solstice class does not borrow Edge deck numbers</h2>
+<p>On the Solstice-class notes, decks 4 and 5 are the promenade, casino, entertainment and shops, and deck 6 is the first of the cabin decks that run through deck 11. The lawn, sports and the kids' and teen areas are deck 15, above the lido. That is a different stack from Edge, where deck 14 is the lido and deck 12 is the top cabin deck under it.</p>
+<p>The three Solstice ships then split on the top of the cabin block. <a href="{u("/ships/celebrity-reflection/")}">Celebrity Reflection</a> puts the spa on deck 12 and suites with the lido, sundeck and pools on deck 14. <a href="{u("/ships/celebrity-equinox/")}">Celebrity Equinox</a> puts pools on the top cabin deck, deck 12, under the lido sundeck on deck 14. <a href="{u("/ships/celebrity-solstice/")}">Celebrity Solstice</a> puts the spa, solarium, pools and a sundeck on deck 12, under the lido on deck 14. A "deck 12" warning is not the same sentence on all three. The <a href="{u("/guides/quietest-cruise-cabins/")}">quietest-decks table</a> lists the sandwiched decks ship by ship.</p>'''
+        faqs = [
+            ("Are Celebrity Edge and Celebrity Beyond the same size?",
+             "No. Wikipedia infoboxes checked 21 Nov 2026 list Beyond and Ascent at 141,420 gross tons and 3,260 guests at double occupancy. Edge's page lists 130,818 gross tons and 2,918 guests. Apex's page lists 130,818 gross tons and 2,910 guests."),
+            ("Does deck 12 mean the same thing on every Celebrity ship here?",
+             "No. On the Edge-class ships, deck 12 is the top cabin deck under the pools on deck 14, and there is no deck 13. On Solstice class, deck 6 starts the cabin run and deck 15 is the lawn. Equinox and Solstice also put pools on deck 12 itself. Reflection puts the spa there and the suites up on the lido."),
+        ]
+        return html, faqs
+    if k == "holland-america":
+        html = f'''<h2>Pinnacle class and Signature class are not the same quiet deck</h2>
+<p>Holland America on this site is five ships and two classes. Rotterdam, Nieuw Statendam and Koningsdam are Pinnacle class. Eurodam and Nieuw Amsterdam are Signature class. The numbers below are the ones already on each ship page, from the Wikipedia infoboxes those pages were checked against on 16 Nov 2026. This hub was written 21 Nov 2026 to put the two classes side by side. It is not a new measurement of the ships, and it does not claim a cabin that sleeps five, because no Holland America occupancy page was opened that day. That question, for the lines that were checked, is the <a href="{u("/guides/cabins-for-five/")}">family-of-five guide</a>.</p>
+<p>Pinnacle class, on the deck labels: deck 1 mixes cabins with the lobby. Decks 2 and 3 are lounges, shops, the casino and dining, with no cabins. Decks 4 to 8 are cabin decks, and the bridge is on deck 8. Deck 9 is the lido, pools, spa and sundeck, so deck 8 is the cabin deck directly under it. Deck 10 mixes cabins with the kids' and teen areas. Deck 11 mixes cabins with sports. Deck 12 is the Explorations Lounge, The Retreat and an adults' sundeck, with no cabins. The guest counts already on the pages are 2,668 on <a href="{u("/ships/rotterdam/")}">Rotterdam</a> (99,935 gross tons), 2,666 on <a href="{u("/ships/nieuw-statendam/")}">Nieuw Statendam</a> (99,902) and 2,650 at double occupancy on <a href="{u("/ships/koningsdam/")}">Koningsdam</a> (99,863). Close, and not identical.</p>
+<p>Signature class keeps the low public block and changes the top. Deck 1 still mixes cabins with the lobby, and decks 2 and 3 are still the promenade, casino, lounge, shops and dining. Decks 4 to 8 are cabin decks, and deck 7 also lists a suite lounge, which the Pinnacle notes do not. Deck 9 is the lido, so deck 8 is again directly under it. Deck 10 mixes cabins with the kids' and teen areas. Deck 11 mixes cabins with the observation area, sports and the Crow's Nest, instead of stopping at a Retreat deck with no cabins. <a href="{u("/ships/eurodam/")}">Eurodam</a> is listed at 86,273 gross tons and 2,104 guests. <a href="{u("/ships/nieuw-amsterdam/")}">Nieuw Amsterdam</a> is listed at 86,700 gross tons and 2,106 guests.</p>
+<p>Eurodam has a date the others do not. Its ship page already notes that Holland America posts a separate deck plan for sailings after 24 March 2027, and that this site follows the current listing. That sentence is Eurodam's. It is not copied onto Nieuw Amsterdam. The <a href="{u("/guides/cruise-cabins-to-avoid/")}">cabins to avoid</a> guide is the general version of the "deck under the lido" point, which on both of these classes is deck 8.</p>'''
+        faqs = [
+            ("Is deck 8 a quiet cabin on Holland America?",
+             "Not on these five ships. On both Pinnacle class and Signature class, deck 9 is the lido, so deck 8 sits directly under the pools. The sandwiched cabin decks are lower in the run, from deck 4 upward, and deck 7 on Signature class also lists a suite lounge."),
+            ("Does Eurodam keep this deck plan after March 2027?",
+             "Holland America's Eurodam page links a separate deck plan for sailings after 24 March 2027. The map on our Eurodam page follows the current listing. Nieuw Amsterdam's page does not carry that date."),
+        ]
+        return html, faqs
+    if k == "princess":
+        html = f'''<h2>Sphere, Royal and Crown do not share a deck 8</h2>
+<p>Princess on this site is three layouts, and the Royal-class ships are not even one layout. The figures below are the ones already on each ship page (Wikipedia infoboxes, those pages checked 16 Nov 2026). This hub was written 21 Nov 2026 to stop a Sphere answer being pasted onto Ruby. No Princess occupancy page was opened that day, so this hub does not name a cabin that sleeps five. The lines that were checked are in the <a href="{u("/guides/cabins-for-five/")}">family-of-five guide</a>.</p>
+<p>Sphere class is <a href="{u("/ships/sun-princess/")}">Sun Princess</a> and <a href="{u("/ships/star-princess/")}">Star Princess</a>. Both pages list 177,882 gross tons and 4,300 guests. Sun entered service in February 2024. Star's page lists October 2025. The Sphere notes put Reserve Collection Cabana Mini-Suites on deck 9, the promenade deck, which also has the lobby and Lido Marketplace. Decks 11, 12 and 14 are the sandwiched cabin decks. Deck 10 is one floor above the promenade. Deck 15 sits under deck 16. Deck 17 mixes cabins with the Dome and the lido. Sun's notes add a single-occupancy inside category (IS) on deck 10. Star's notes do not. Do not give Star that solo room unless Princess's own plan shows it.</p>
+<p>Royal class splits into three neighbour patterns, which is the detail a class label hides. <a href="{u("/ships/discovery-princess/")}">Discovery Princess</a> (145,000 gross tons, 3,660 guests, in service March 2022) mixes cabins with the lido on both deck 16 and deck 17. <a href="{u("/ships/enchanted-princess/")}">Enchanted Princess</a> and <a href="{u("/ships/sky-princess/")}">Sky Princess</a> (both 145,281 gross tons and 3,660 guests) put the lido cabins on deck 16 and the kids' and teen areas on deck 17. <a href="{u("/ships/royal-princess/")}">Royal Princess</a> (142,714 gross tons, 3,600 guests) and <a href="{u("/ships/majestic-princess/")}">Majestic Princess</a> (144,216 gross tons, 3,560 guests) put cabins with the lido on deck 16 and give deck 17 to the sundeck, the adults' area, kids and teens, with no cabins on 17. Deck 8 on all of these is the first cabin deck above the Promenade on deck 7. "Deck 17" is a cabin deck on Discovery, Enchanted and Sky, and it is not a cabin deck on Royal or Majestic.</p>
+<p><a href="{u("/ships/ruby-princess/")}">Ruby Princess</a> is the Crown-class ship, listed at 113,561 gross tons and 3,080 guests, in service November 2008. Cabins start on deck 5, mixed with the plaza, dining and the lobby, under the casino and shops on deck 6. Deck 14 mixes cabins with the bridge and a pool. Deck 15 mixes cabins with the lido, under the sundeck and spa on deck 16. A Sun Princess deck number does not transfer. The <a href="{u("/guides/quietest-cruise-cabins/")}">quietest-decks table</a> is the ship-by-ship list.</p>'''
+        faqs = [
+            ("Do all Royal-class Princess ships put cabins on deck 17?",
+             "No. Discovery, Enchanted and Sky mix cabins onto deck 17. Royal and Majestic give deck 17 to the sundeck, the adults' area, kids and teens, with no cabins. Deck 16 is the lido cabin deck on all five."),
+            ("Is Sun Princess the same layout as Ruby Princess?",
+             "No. Sun and Star are Sphere class, at 177,882 gross tons, with cabana mini-suites on the promenade deck. Ruby is Crown class, at 113,561 gross tons, with cabins starting on deck 5 beside the plaza. The deck numbers are not advice you can carry from one to the other."),
+        ]
+        return html, faqs
     return "", []
-
 def line_pages():
     cards = []
     for k, L in LINES.items():
@@ -466,7 +508,7 @@ def line_pages():
 {line_extra}{compare}<ul class="cards">{items}</ul>{mid_reads}<p class="note">Official fleet pages: {link((L["name"] + " ships", L["url"]))}. Which Cabin is independent and not affiliated with {E(L["name"])}.</p>
 {faq_block(faqs)}{end_reads}{related(p) if not line_extra else ""}'''
         desc = f'Which {L["short"]} cabin should I book? Quiet decks, seasickness picks and cabins to avoid on {len(ss)} ships, including {ss[0]["name"]}.'
-        line_modified = ADDED4 if line_extra else (ADDED2 if k == "royal-caribbean" else ADDED)
+        line_modified = ADDED5 if k in ("celebrity", "holland-america", "princess") else (ADDED4 if line_extra else (ADDED2 if k == "royal-caribbean" else ADDED))
         published = ADDED if line_extra else None
         write(p, page(p, f'Which {L["short"]} Cabin Should I Book', desc, body, [article_ld(h1, p, line_modified, published), faq_ld(faqs)], [("/", "Home"), ("/lines/", "Cruise lines"), (p, L["short"])], modified=line_modified, og_type="article"))
         cards.append(f'<li class="card"><h2><a href="{u(p)}">{E(L["name"])}</a></h2><p>{", ".join(E(s["name"]) for s in ss)}</p></li>')
@@ -513,6 +555,7 @@ def guides():
 <h2>1. Choose the deck</h2><p>Look at what is directly above and below the deck. The best cabin decks are sandwiched between other cabin decks. The worst for light sleepers sit directly under a pool, sports or buffet deck (deck chairs and set-up start early) or directly above a theatre, casino, nightclub or promenade (busy late). Our <a href="{u('/guides/quietest-cruise-cabins/')}">quietest decks table</a> lists the sandwiched decks for every ship we cover.</p>
 <h2>2. Choose the spot on the deck</h2><ul><li><strong>Midship</strong> moves least in a swell and is close to the main elevators.</li><li><strong>Forward</strong> cabins feel the most pitching; the CDC advises avoiding the bow if you are prone to motion sickness. The lowest forward cabins are also close to the bow thrusters and anchor gear.</li><li><strong>Aft</strong> cabins can have wide wake views from corner balconies, and are often quiet at night, but some ships have more vibration at the stern.</li><li>Avoid cabins beside elevator lobbies, stair landings, laundry rooms and service doors (unlabelled blocks on the deck plan) if you are a light sleeper.</li></ul>
 <h2>3. Choose the room type</h2><ul><li><strong>Interior:</strong> cheapest and darkest, good for sleep. Some ships sell virtual-window or promenade-view interiors.</li><li><strong>Oceanview:</strong> a window, which helps with seasickness because you can see the horizon.</li><li><strong>Balcony:</strong> private outdoor space. Read the category: inward-facing, promenade-view and partial-view balconies cost less but give a different view.</li><li><strong>Suites and ship-within-a-ship areas</strong> (The Haven, MSC Yacht Club, The Retreat, Disney Concierge) add space and private areas.</li></ul>
+<p>If five people need one cabin, the room type is an occupancy question before it is a view question. The <a href="{u('/guides/cabins-for-five/')}">family-of-five guide</a> lists only the categories each line\'s own page prints at 5 guests or more. A room with "family" in the name is not automatically one of them.</p>
 <h2>4. Check the category name for warnings</h2><p>Lines flag compromises in the category name or on the deck plan legend: "partial view", "obstructed view", "inward facing", "promenade view". Cabins one deck above the lifeboats are the usual obstructed-view rooms.</p>
 <h2>5. Guarantee cabins</h2><p>A guarantee fare means the line picks your cabin within a category. It is cheaper, but you cannot choose the deck, so it is a poor bet for light sleepers or anyone prone to seasickness.</p>
 <h2>Worked example: {E(ex["name"])}</h2><p>On <a href="{u(ship_path(ex))}">{E(ex["name"])}</a>, decks {E(rng(ex["_quiet"]))} are the sandwiched cabin decks, while deck {E(rng(ex["_pool"]))} sits directly under the pool and sports deck. So a midship balcony on deck {E(ex["_quiet"][len(ex["_quiet"]) // 2])} is a strong all-round pick.</p>
@@ -705,6 +748,33 @@ def guides():
        ("Princess Cruises: pre-cruise FAQ, cabin number allocation", "https://www.princess.com/faq/pre-cruise")],
       modified=ADDED5, end_related=True)
 
+    from cabins_for_five import parts as five_parts
+    five_path = "/guides/cabins-for-five/"
+    five_mid = next_reads(five_path, [
+        ("/ships/independence-of-the-seas/", "Independence of the Seas", "Ultra Spacious Ocean View and Spacious Interior are the rooms the deck plan marks at 6."),
+        ("/ships/norwegian-joy/", "Norwegian Joy", "Family Oceanview and the Haven villa HH are up to 5. Family Inside stops at 4."),
+        ("/ships/disney-wish/", "Disney Wish", "Accessible category 3A sleeps 5 here, and 4 on Disney Destiny."),
+        ("/guides/cruise-cabins-to-avoid/", "Cabins to avoid", "A room that sleeps five can still sit under the pool."),
+    ], "Keep reading")
+    five_end = next_reads(five_path, [
+        ("/guides/how-to-choose-a-cruise-cabin/", "How to choose a cabin", "Deck first, then the spot on the deck, then the room type."),
+        ("/guides/quietest-cruise-cabins/", "Quietest cabin decks", "The sandwiched decks, ship by ship, after the occupancy is settled."),
+        ("/ships/celebrity-beyond/", "Celebrity Beyond", "The line that did not print a single room sleeping 5."),
+        ("/lines/carnival/", "Carnival ships", "Sleeps up to 5 is on the room-type page. Family Harbor's blurb has no number."),
+    ], "Next reads")
+    five_compare = ('<aside class="compare" aria-label="Check another line"><h2>Check another line</h2>'
+                    '<p>Occupancy is published by the line, not by the ship class. Open the hub, then the ship.</p>'
+                    '<p class="compare-links">' + " · ".join(
+                        f'<a href="{u("/lines/" + k + "/")}">{E(L["short"])}</a>'
+                        for k, L in LINES.items() if k in ("royal-caribbean", "carnival", "norwegian", "msc", "disney", "celebrity")
+                    ) + f' · <a href="{u("/ships/")}">Every ship</a></p></aside>')
+    five_inner, five_faqs, five_srcs = five_parts(u, five_mid, five_compare)
+    guide(five_path, "Which Cabin Sleeps a Family of Five", "Which cruise cabin sleeps a family of five?",
+          "Which cabin sleeps a family of five? The room types Royal Caribbean, Carnival, Norwegian, MSC, Disney and Celebrity print at occupancy 5 or more.",
+          five_inner, five_faqs, five_srcs, modified=ADDED5,
+          thumb=("/assets/cabins-for-five.jpg", "Empty cruise balcony cabin in daylight, set up as a connecting family room", "AI-generated image"),
+          mid=five_end, end_related=True)
+
 def home():
     lines = "".join(f'<li class="card"><h3><a href="{u("/lines/" + k + "/")}">{E(L["name"])}</a></h3><p>' + ", ".join(f'<a href="{u(ship_path(s))}">{E(s["name"])}</a>' for s in SHIPS if s["line"] == k) + '</p></li>' for k, L in LINES.items())
     faqs = [
@@ -716,7 +786,7 @@ def home():
 <p class="answer">Deck-by-deck guides to the best cabins and the ones to avoid on {len(SHIPS)} of the biggest cruise ships. We map what is above and below every cabin deck from published deck-by-deck listings, with a link to each line's own deck plan, so you can ask for a quiet cabin before you book.</p>
 <p class="btnrow"><a class="btn" href="{u('/ships/')}">Find your ship</a> <a class="btn alt" href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cabin</a></p></section>
 <h2>Ships by cruise line</h2><ul class="cards">{lines}</ul>
-<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li><li><a href="{u('/guides/connecting-cruise-cabins/')}">Connecting cruise cabins</a></li><li><a href="{u('/guides/hump-cabins/')}">What a hump cabin is</a></li><li><a href="{u('/guides/guarantee-cabins/')}">What a guarantee cabin gives up</a></li></ul>
+<h2>Guides</h2><ul class="cols"><li><a href="{u('/guides/how-to-choose-a-cruise-cabin/')}">How to choose a cruise cabin</a></li><li><a href="{u('/guides/quietest-cruise-cabins/')}">The quietest cabin decks on every ship</a></li><li><a href="{u('/guides/best-cabin-for-seasickness/')}">Best cabin location for seasickness</a></li><li><a href="{u('/guides/cruise-cabins-to-avoid/')}">Cruise cabins to avoid</a></li><li><a href="{u('/guides/connecting-cruise-cabins/')}">Connecting cruise cabins</a></li><li><a href="{u('/guides/hump-cabins/')}">What a hump cabin is</a></li><li><a href="{u('/guides/guarantee-cabins/')}">What a guarantee cabin gives up</a></li><li><a href="{u('/guides/cabins-for-five/')}">Cabins that sleep a family of five</a></li></ul>
 <h2>How it works</h2><p>For every ship we take the deck-by-deck listing of the current deck plan, mark each deck as cabins, public venues or a mix, and flag cabin decks that sit directly under pools and sports areas or over bars and theatres. Then we add ship-specific tips and cite every source. We are independent: no cruise line pays for coverage. <a href="{u('/methodology/')}">Sources and methods</a>.</p>
 {faq_block(faqs)}'''
     write("/", page("/", "Which Cabin Should I Book on a Cruise", f"Which cabin and deck to book on {len(SHIPS)} big cruise ships, and which to avoid: deck noise maps, seasickness picks and quiet decks.", body, [faq_ld(faqs)], modified=ADDED2))
@@ -741,7 +811,7 @@ def about_legal():
 <h2>Updates</h2><p>Ships get refitted and categories change. <a href="{u('/contact/')}">Report an error</a> and we will re-check the source.</p>''', "Sources and methods", modified=ADDED4)
     simple("/image-policy/", f"Image Policy | {BRAND}", "How Which Cabin creates and credits images and diagrams.", "Image policy", f'''
 <p>Last updated {TODAY_H}.</p><h2>Diagrams</h2><p>Deck noise maps and charts on Which Cabin are original diagrams generated by us from cited facts. They are not copies of any cruise line's deck plan artwork.</p>
-<h2>Photos</h2><p>We do not use cruise line photos or deck plan images without permission. Article thumbnails are original AI-generated news-photo style images hosted on this site under <code>/assets/</code>, including <code>/assets/connecting-cruise-cabins.jpg</code>, <code>/assets/cruise-hump-cabin.jpg</code> and <code>/assets/cruise-cabin-keycard-door.jpg</code>.</p>
+<h2>Photos</h2><p>We do not use cruise line photos or deck plan images without permission. Article thumbnails are original AI-generated news-photo style images hosted on this site under <code>/assets/</code>, including <code>/assets/connecting-cruise-cabins.jpg</code>, <code>/assets/cruise-hump-cabin.jpg</code>, <code>/assets/cruise-cabin-keycard-door.jpg</code> and <code>/assets/cabins-for-five.jpg</code>.</p>
 <h2>AI-generated images</h2><p>Each article thumbnail carries a visible "AI-generated image" credit and a link to this page. The images do not depict real identifiable people and are never presented as a photograph of a named ship or a real cabin on a sailing.</p>
 <h2>Logos and trademarks</h2><p>We do not display cruise line logos. Names are used only to identify ships.</p>
 <h2>Questions</h2><p>If you believe an image on this site uses your work, see our <a href="{u('/copyright/')}">copyright policy</a> or <a href="{u('/contact/')}">contact us</a>.</p>''', "Image policy")
@@ -817,7 +887,7 @@ def extras():
     open(os.path.join(ROOT, "robots.txt"), "w").write("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + f"Sitemap: {BASE_URL}sitemap.xml\n")
     open(os.path.join(ROOT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{url(p)}</loc><lastmod>{m}</lastmod></url>\n" for p, m in PAGES) + "</urlset>\n")
     ll = [f"# {BRAND}", "", f"> Which Cabin (whichcabin.com) tells cruise passengers which cabin and deck to book, and which to avoid, on {len(SHIPS)} of the biggest cruise ships. Each ship page has a deck noise map built from the current deck plan, quiet decks, seasickness picks and cited sources. Checked {TODAY_H}.", "", "Independent; not affiliated with any cruise line. Layouts change; confirm on the line's deck plan.", "", "## Guides",
-          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Connecting cruise cabins]({url('/guides/connecting-cruise-cabins/')})", f"- [What a hump cabin is]({url('/guides/hump-cabins/')})", f"- [What a guarantee cabin gives up]({url('/guides/guarantee-cabins/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
+          f"- [How to choose a cruise cabin]({url('/guides/how-to-choose-a-cruise-cabin/')})", f"- [Quietest cabin decks on every ship]({url('/guides/quietest-cruise-cabins/')})", f"- [Best cabin for seasickness]({url('/guides/best-cabin-for-seasickness/')})", f"- [Cruise cabins to avoid]({url('/guides/cruise-cabins-to-avoid/')})", f"- [Connecting cruise cabins]({url('/guides/connecting-cruise-cabins/')})", f"- [What a hump cabin is]({url('/guides/hump-cabins/')})", f"- [What a guarantee cabin gives up]({url('/guides/guarantee-cabins/')})", f"- [Cabins that sleep a family of five]({url('/guides/cabins-for-five/')})", f"- [Sources and methods]({url('/methodology/')})", "", "## Ships"]
     for s in SHIPS: ll.append(f"- [{s['name']}]({url(ship_path(s))}) ({LINES[s['line']]['short']}): quiet cabin decks {rng(s['_quiet']) or 'none'}; cabin deck under pools {rng(s['_pool']) or 'none'}")
     open(os.path.join(ROOT, "llms.txt"), "w").write("\n".join(ll) + "\n")
     open(os.path.join(ROOT, "favicon.svg"), "w").write(LOGO.replace('width="34" height="34" ', 'xmlns="http://www.w3.org/2000/svg" ').replace(' aria-hidden="true" focusable="false"', ""))
