@@ -125,6 +125,7 @@ def ga4_head():
             "'security_storage':'granted','wait_for_update':500});</script>"
             f'<script id="ga4-loader" type="text/plain" data-ga4-id="{E(GA4_ID)}" data-src="https://www.googletagmanager.com/gtag/js?id={E(GA4_ID)}"></script>')
 def adsense_head():
+    return ""  # AdSense detached 21 Nov 2026 until the account is approved (see seo-central/site-seo-rules.md). Do not re-add.
     if not LAUNCH: return ""
     # Head script + account meta for AdSense readiness; no ad units on the page.
     return (f'<meta name="google-adsense-account" content="{E(ADSENSE_PUB)}">'
@@ -640,7 +641,7 @@ def extras():
     if LAUNCH: open(cn, "w").write("whichcabin.com\n")
     elif os.path.exists(cn): os.remove(cn)
     open(os.path.join(ROOT, f"{INDEXNOW_KEY}.txt"), "w").write(INDEXNOW_KEY)
-    open(os.path.join(ROOT, "ads.txt"), "w").write(f"google.com, pub-{ADSENSE_PUB.split('ca-pub-')[-1]}, DIRECT, f08c47fec0942fa0\n")
+    open(os.path.join(ROOT, "ads.txt"), "w").write("")  # AdSense detached 21 Nov 2026 until the account is approved (see seo-central/site-seo-rules.md). Do not re-add.
     bots = ["*", "Googlebot", "Bingbot", "Mediapartners-Google", "OAI-SearchBot", "ChatGPT-User", "GPTBot", "PerplexityBot", "Perplexity-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "Google-Extended", "Applebot", "Applebot-Extended", "DuckAssistBot", "Amazonbot", "CCBot"]
     open(os.path.join(ROOT, "robots.txt"), "w").write("".join(f"User-agent: {b}\nAllow: /\n\n" for b in bots) + f"Sitemap: {BASE_URL}sitemap.xml\n")
     open(os.path.join(ROOT, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"<url><loc>{url(p)}</loc><lastmod>{m}</lastmod></url>\n" for p, m in PAGES) + "</urlset>\n")
