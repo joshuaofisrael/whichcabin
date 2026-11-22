@@ -92,9 +92,21 @@ def related(path, extra=()):
 def next_reads(path, items, heading="Keep reading"):
     """3-4 closely related next-read links. items: (path, title, blurb). No ad-like styling."""
     out = []
+    thumbs = [
+        "/assets/cruise-cabin-keycard-door.jpg",
+        "/assets/cruise-hump-cabin.jpg",
+        "/assets/connecting-cruise-cabins.jpg",
+        "/assets/cabins-for-five.jpg",
+    ]
+    ti = 0
     for p, title, blurb in items:
         if p == path: continue
-        out.append(f'<li><a href="{u(p)}"><strong>{E(title)}</strong></a><span>{E(blurb)}</span></li>')
+        th = thumbs[ti % len(thumbs)]; ti += 1
+        out.append(
+            f'<li><a class="nr-thumb" href="{u("/image-policy/")}"><img src="{u(th)}" width="320" height="180" alt="" loading="lazy" decoding="async"></a>'
+            f'<span class="img-credit"><a href="{u("/image-policy/")}">Image policy</a></span>'
+            f'<a href="{u(p)}"><strong>{E(title)}</strong></a><span>{E(blurb)}</span></li>'
+        )
         if len(out) >= 4: break
     if not out: return ""
     return f'<aside class="nextreads" aria-label="{E(heading)}"><h2>{E(heading)}</h2><ul>{"".join(out)}</ul></aside>'
@@ -339,7 +351,9 @@ def ship_page(s):
     end_reads = next_reads(ship_path(s), _ship_read_items(s), "Next reads") if engage else ""
     compare = compare_box(s) if engage else ""
     related_block = related(path, [(f'/lines/{s["line"]}/', f'All {L["short"]} ships')]) if not engage else ""
+    hero = hero_figure("cruise-cabin-keycard-door.jpg", "A cruise cabin door and keycard lock in ordinary corridor light, no people and no logos")
     body = f'''<article class="prose wide"><h1>Which cabin to book on {E(s["name"])}</h1>
+{hero}
 <p class="sub">{E(" · ".join(sub_bits))}</p>
 <div class="answer"><p><strong>Quick answer</strong></p><ul>{"".join(qa)}</ul></div>
 {byline_html}<p>{E(s["name"])} has {len(cab)} decks with passenger cabins. Below is our deck noise map, which marks every deck by what is on it and what is directly above and below, followed by ship-specific tips and the cabins to think twice about. It is a planning shortcut: the line's own deck plan is always the final word on any cabin number.</p>
@@ -504,7 +518,8 @@ def line_pages():
             compare = _line_compare(k) + "\n"
             mid_reads = next_reads(p, _line_reads(ss), "Keep reading")
             end_reads = next_reads(p, _line_reads(ss), "Next reads")
-        body = f'''<h1>{E(h1)}</h1>{byline}<p class="answer">Cabin guides for {len(ss)} {E(L["short"])} ships{E(klass)}. Ships of the same class share a layout, so the same decks tend to be quiet or noisy across sister ships.</p>
+        hero = hero_figure("cruise-hump-cabin.jpg", "Daylit cruise balcony cabin with a wider opening onto the sea, no people and no logos")
+        body = f'''<h1>{E(h1)}</h1>{byline}{hero}<p class="answer">Cabin guides for {len(ss)} {E(L["short"])} ships{E(klass)}. Ships of the same class share a layout, so the same decks tend to be quiet or noisy across sister ships.</p>
 {line_extra}{compare}<ul class="cards">{items}</ul>{mid_reads}<p class="note">Official fleet pages: {link((L["name"] + " ships", L["url"]))}. Which Cabin is independent and not affiliated with {E(L["name"])}.</p>
 {faq_block(faqs)}{end_reads}{related(p) if not line_extra else ""}'''
         desc = f'Which {L["short"]} cabin should I book? Quiet decks, seasickness picks and cabins to avoid on {len(ss)} ships, including {ss[0]["name"]}.'
